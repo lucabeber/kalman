@@ -1,7 +1,13 @@
 # Kalman Filter Library
 
-[![Build Status](https://travis-ci.org/mherb/kalman.svg?branch=master)](https://travis-ci.org/mherb/kalman)
+[![Build Status](https://travis-ci.org/jwdinius/kalman.svg?branch=master)](https://travis-ci.org/jwdinius/kalman)
 
+## _This is a fork!_
+The [original repo](https://github.com/mherb/kalman) has not been maintained for some time now, so I decided to create and update this fork with new features and fixes for old issues.  I am importing, and resolving, some of the issues in the original repo, as well as creating new issues to address new bugs and feature requests.
+
+If you have a feature you would like implemented, or a bug to report, please create an issue.  Pull requests are encouraged.
+
+# Original Repo's README
 This is a header-only C++11 library implementing common variants of the well-known [Kalman-Filter](https://en.wikipedia.org/wiki/Kalman_filter).
 Currently implementations of these filter variants are included:
 

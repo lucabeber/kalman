@@ -29,7 +29,9 @@ namespace Kalman {
     class ExtendedKalmanFilter;
     template<class StateType>
     class SquareRootExtendedKalmanFilter;
-    
+    template<class StateType>
+    class AFExtendedKalmanFilter;
+
     /**
      * @brief Abstract base class of all linearized (first order taylor expansion) measurement models
      *
@@ -42,6 +44,7 @@ namespace Kalman {
     {
         friend class ExtendedKalmanFilter<StateType>;
         friend class SquareRootExtendedKalmanFilter<StateType>;
+        friend class AFExtendedKalmanFilter<StateType>;
     public:
         //! Measurement model base
         typedef MeasurementModel<StateType, MeasurementType, CovarianceBase> Base;

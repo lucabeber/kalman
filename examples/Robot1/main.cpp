@@ -14,7 +14,6 @@
 
 #include <iostream>
 #include <random>
-#include <chrono>
 
 
 using namespace KalmanExamples;
@@ -49,7 +48,7 @@ int main(int argc, char** argv)
     
     // Random number generation (for noise simulation)
     std::default_random_engine generator;
-    generator.seed( std::chrono::system_clock::now().time_since_epoch().count() );
+    generator.seed( 111111 );
     std::normal_distribution<T> noise(0, 1);
     
     // Some filters for estimation
@@ -73,7 +72,7 @@ int main(int argc, char** argv)
     T distanceNoise = 0.25;
     
     // Simulate for 100 steps
-    const size_t N = 100;
+    const size_t N = 10000;
     for(size_t i = 1; i <= N; i++)
     {
         // Generate some control input

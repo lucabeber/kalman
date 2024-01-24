@@ -16,6 +16,8 @@ option(KALMAN_BUILD_EXAMPLES "Build the Kalman examples" ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+set(CMAKE_PREFIX_PATH "/opt/homebrew/include/eigen3" ${CMAKE_PREFIX_PATH})
+
 find_package(Eigen3 REQUIRED)
 
 set(HEADERS
@@ -57,7 +59,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DEIGEN_NO_DEBUG")
 
 # Examples
 if(KALMAN_BUILD_EXAMPLES)
-  add_executable(example_robot1 "examples/Robot1/main.cpp")
+  # add_executable(example_robot1 "examples/Robot1/main.cpp")
+  add_executable(example_measurament "examples/StiffEst/main.cpp")
 endif()
 
 # Unit Tests
@@ -76,14 +79,6 @@ set(TESTS
     test/Matrix.cpp
 )
 
-if(BUILD_TESTING)
-  enable_testing()
-  add_subdirectory("external/googletest")
-  include_directories("external/googletest/include")
-  add_executable(kalman_test ${TESTS} ${HEADERS})
-  target_link_libraries(kalman_test PRIVATE gtest gtest_main)
-  add_test(Kalman kalman_test)
-endif()
 
 #
 # Install/Uninstall support

@@ -21,8 +21,16 @@ This makes estimation of the true position quite challenging since the measureme
 The models and measurement vectors are defined in `OrientationMeasurementModel.hpp` and `PositionMeasurementModel.hpp` respectively.
 
 ## Results
-### Estimated Trajectory
+### Plots from `visualization.m`
+#### Estimated Trajectory
 ![Estimate](estimate.png)
 
-### Euclidean distance error in each time-step
+#### Euclidean distance error in each time-step
 ![Error](error.png)
+
+### Generate plots using `visualization.py`
+If you would like to generate your own plots, and don't have matlab, you can run
+```bash
+python $PATH_TO_VISUALIZATION_SCRIPT/visualization.py --path_to_exec $PATH_TO_BUILD_DIR --makeplot
+```
+_after building the example._
