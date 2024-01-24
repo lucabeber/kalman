@@ -181,7 +181,9 @@ public:
 
 
         // W = df/dw (Jacobian of state transition w.r.t. the noise)
-        this->W.setIdentity();
+        this->W.setZero();
+        this->W( S::POSITION, S::POSITION ) = 1.080336677273649e-07;
+        this->W( S::VELOCITY, S::VELOCITY ) = 8.125605216973451e-05;
         
     }
 };

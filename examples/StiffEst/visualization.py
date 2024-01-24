@@ -66,3 +66,15 @@ if __name__ == "__main__":
         # Set window title
 
         plt.show()
+
+    # Estimate the mean square error of the estimate penetration data[2, :] and data[4, :], 
+    # and of the estimated velocity data[3, :] and data[5, :].
+    mean_square_error_pen = np.mean((data[2, :] - data[4, :])**2)
+    mean_square_error_vel = np.mean((data[3, :] - data[5, :])**2)
+
+    # Print in terminal the mean square error of the estimate penetration and velocity
+    print("Mean square error of the estimate penetration: ", mean_square_error_pen)
+    print("Mean square error of the estimate velocity: ", mean_square_error_vel)
+    
+        
+
