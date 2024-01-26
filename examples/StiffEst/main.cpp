@@ -8,7 +8,7 @@
 #include <vector>
 
 
-#include "SystemModelEulero.hpp"
+#include "SystemModelRK4.hpp"
 #include "VelocityMeasurementModel.hpp"
 
 #include <kalman/ExtendedKalmanFilter.hpp>
@@ -70,51 +70,52 @@ int main(int argc, char** argv)
     Control u;
 
     // // Measurement models
-    // // Set position landmarks at (-10, -10) and (30, 75)
     VelocityModel vm;
     
-    // // Random number generation (for noise simulation)
-    // std::default_random_engine generator;
-    // generator.seed( std::chrono::system_clock::now().time_since_epoch().count() );
-    // std::normal_distribution<T> noise(0, 1);
+    // Random number generation (for noise simulation)
+    std::default_random_engine generator;
+    generator.seed( std::chrono::system_clock::now().time_since_epoch().count() );
+    std::normal_distribution<T> noise(0, 1);
     
     // Some filters for estimation
     Kalman::ExtendedKalmanFilter<State> ekf;
-    // // Unscented Kalman Filter
-    // Kalman::UnscentedKalmanFilter<State> ukf(1);
-    // // Adaptive Fading Extended Kalman Filter
-    // Kalman::AFExtendedKalmanFilter<State> afekf;
+    // Unscented Kalman Filter
+    Kalman::UnscentedKalmanFilter<State> ukf(1);
+    // Adaptive Fading Extended Kalman Filter
+    Kalman::AFExtendedKalmanFilter<State> afekf;
 
     // Init filters with true system state
     ekf.init(x);
-    // ukf.init(x);
-    // afekf.init(x);
+    ukf.init(x);
+    afekf.init(x);
 
     // Save covariance for later
     Kalman::Covariance<State> cov = ekf.getCovariance();
     // Set initial values for the covariance
     cov(0,0) = 1;
     cov(1,1) = 1;
-    cov(2,2) = 1000;
+    cov(2,2) = 5000;
     cov(3,3) = 40;
 
-    // Set covariance
-    // ukf.setCovariance(cov);
+    // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
-    
-    // cov(0,0) = 0.000001;
-    // cov(1,1) = 0.1;
-    // cov(2,2) = 0.1;
-    // afekf.setCovariance(cov);
-    // // Standard-Deviation of noise added to all state vector components during state transition
-    // // T systemNoise = 0.1;
-    // // // Standard-Deviation of noise added to all measurement vector components in orientation measurements
-    // // T orientationNoise = 0.025;
-    // // // Standard-Deviation of noise added to all measurement vector components in distance measurements
-    // // T distanceNoise = 0.25;
-    
-    // double u, up, force;
+    if(ukf.setCovariance(cov)!= true)
+        std::cout << "Error in setting covariance" << std::endl;
+    if(afekf.setCovariance(cov)!= true)
+        std::cout << "Error in setting covariance" << std::endl;
+    // Set covariance of the process noise
+    cov(0,0) = pow(1.080336677273649e-07,2);
+    cov(1,1) = pow(8.125605216973451e-05,2);
+    cov(2,2) = 0.0;
+    cov(3,3) = 0.0;
+    if(sys.setCovariance(cov)!= true)
+        std::cout << "Error in setting covariance" << std::endl;
+    // Set covariance of the measurement noise
+    Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
+    cov2(0,0) = pow(5e-2,2);
+    if(vm.setCovariance(cov2)!= true)
+        std::cout << "Error in setting covariance" << std::endl;
 
     // Simulate for 10 seconds and a frequency of 500 Hz
     const size_t N = data.size();
@@ -127,16 +128,10 @@ int main(int argc, char** argv)
         // Simulate system
         x = sys.f(x, u);
         
-    //     // Add noise: Our robot move is affected by noise (due to actuator failures)
-    //     // x.p() += systemNoise*noise(generator);
-    //     // x.y() += systemNoise*noise(generator);
-    //     // x.theta() += systemNoise*noise(generator);
-        
         // Predict state for current time-step using the filters
         auto x_ekf = ekf.predict(sys, u);
-    //     auto x_ukf = ukf.predict(sys);
-    //     auto x_afekf = afekf.predict(sys);
-        
+        auto x_ukf = ukf.predict(sys, u);
+        auto x_afekf = afekf.predict(sys, u);    
 
         // Get the measurement of velocity
         VelocityMeasurement vel;
@@ -144,18 +139,20 @@ int main(int argc, char** argv)
     //     // Measurement is affected by noise as well
     //     // force += noise(generator);
         
-    //     // Set measurement
-    //     fmes.f() = force + noise(generator)*0.8;
+        // Set measurement
+        vel.v() += noise(generator)*5e-2;
 
         // Update UKF
         x_ekf = ekf.update(vm, vel);
-    //     x_ekf = ekf.update(fm, fmes);
-    //     x_afekf = afekf.update(fm, sys, fmes);
+        x_ukf = ukf.update(vm, vel);
+        x_afekf = afekf.update(vm, sys, vel);
     //     // Save estimated state
     //     // x = x_ukf;
         // Print to stdout as csv format
-        std::cout   << data[i][0] << "," << data[i][1] << "," << data[i][2] << "," << data[i][3] 
+        std::cout   << data[i][0] << "," << data[i][1] << "," << data[i][2] << "," << vel.v() 
                     << "," << x_ekf.x1() << "," << x_ekf.x2() << "," << x_ekf.x3() << "," << x_ekf.x4()
+                    << "," << x_ukf.x1() << "," << x_ukf.x2() << "," << x_ukf.x3() << "," << x_ukf.x4()
+                    << "," << x_afekf.x1() << "," << x_afekf.x2() << "," << x_afekf.x3() << "," << x_afekf.x4()
                     << std::endl;
     }
     

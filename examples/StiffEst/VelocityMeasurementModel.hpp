@@ -56,7 +56,7 @@ public:
      */
     VelocityMeasurementModel(){
 
-        this->V.setZero();
+        this->V.setIdentity();
         
     }
     

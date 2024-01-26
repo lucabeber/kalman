@@ -116,7 +116,7 @@ public:
     {
         //! Predicted state vector after transition
         S x_;
-        double dT = this->dT;
+        double h = this->dT;
         double m = this->m;
         double m0 = this->m0;
         double k0 = this->k0;
@@ -125,14 +125,59 @@ public:
         // Change in x-direction is given by the cosine of the (new) orientation
         // times the velocity
         /*Dynamics of the model:
-        x = [
-            x(1) + dT * x(2);
-            x(2) - dT/(m0+m)*( -k0*xd - c0*xdp + x(1)*(k0+x(3)) + x(2)*(c0+x(4)) ) + w;
-            x(3);
-            x(4); 
+
+            h = dT;
+
+            K1 = [
+                x(2);
+                -1/(m0+m)*( -k0*xd - c0*xdp + x(1)*(k0+x(3)) + x(2)*(c0+x(4)) )
+            ];
+
+            x1 = x(1) + h/2 * K1(1);
+            x2 = x(2) + h/2 * K1(2);
+            K2 = [
+                x2;
+                -1/(m0+m)*( -k0*xd - c0*xdp + x1*(k0+x(3)) + x2*(c0+x(4)) )
+            ];
+
+            x1 = x(1) + h/2 * K2(1);
+            x2 = x(2) + h/2 * K2(2);
+            K3 = [
+                x2;
+                -1/(m0+m)*( -k0*xd - c0*xdp + x1*(k0+x(3)) + x2*(c0+x(4)) )
+            ];
+
+            x1 = x(1) + h * K3(1);
+            x2 = x(2) + h * K3(2);
+            K4 = [
+                x2;
+                -1/(m0+m)*( -k0*xd - c0*xdp + x1*(k0+x(3)) + x2*(c0+x(4)) )
+            ];
+
+            x = [
+                x(1) + h/6*( K1(1)+ 2 * K2(1) + 2 * K3(1) + K4(1));
+                x(2) + h/6*( K1(2)+ 2 * K2(2) + 2 * K3(2) + K4(2)) + w;
+                x(3);
+                x(4); 
+            ];
         ];*/
-        x_.x1() = x.x1() + x.x2()*dT;
-        x_.x2() = x.x2() - dT/(m0+m)*( -k0*u.u() - c0*u.u_dot() + x.x1()*(k0+x.x3()) + x.x2()*(c0+x.x4()) );
+        // Precompute some values
+        double m_inv = 1/(m0+m);
+        double u_tot = k0*u.u() + c0*u.u_dot();
+
+        // Compute RK4 coefficients
+        double K1_1 = x.x2();
+        double K1_2 = m_inv*( u_tot - ( x.x1()*(k0+x.x3()) + x.x2()*(c0+x.x4()) ) );
+        double K2_1 = x.x2() + h/2 * K1_2;
+        double K2_2 = m_inv*( u_tot - ( (x.x1() + h/2 * K1_1)*(k0+x.x3()) + (x.x2() + h/2 * K1_2)*(c0+x.x4()) ) );
+        double K3_1 = x.x2() + h/2 * K2_2;
+        double K3_2 = m_inv*( u_tot - ( (x.x1() + h/2 * K2_1)*(k0+x.x3()) + (x.x2() + h/2 * K2_2)*(c0+x.x4()) ) );
+        double K4_1 = x.x2() + h * K3_2;
+        double K4_2 = m_inv*( u_tot - ( (x.x1() + h * K3_1)*(k0+x.x3()) + (x.x2() + h * K3_2)*(c0+x.x4()) ) );
+
+        // Compute new state
+        x_.x1() = x.x1() + h/6*( K1_1 + 2 * K2_1 + 2 * K3_1 + K4_1);
+        x_.x2() = x.x2() + h/6*( K1_2 + 2 * K2_2 + 2 * K3_2 + K4_2);
         x_.x3() = x.x3();
         x_.x4() = x.x4();
         
