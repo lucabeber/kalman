@@ -61,6 +61,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DEIGEN_NO_DEBUG")
 if(KALMAN_BUILD_EXAMPLES)
   add_executable(example_robot1 "examples/Robot1/main.cpp")
   add_executable(example_measurament "examples/StiffEst/main.cpp")
+  add_executable(experiment "examples/RealEstFT/main.cpp")
+  add_executable(experimentNoFT "examples/RealEstNoFT/main.cpp")
 endif()
 
 # Unit Tests
