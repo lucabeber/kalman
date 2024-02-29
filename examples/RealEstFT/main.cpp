@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_2hz.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_5hz.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -65,11 +65,11 @@ int main(int argc, char** argv)
 
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 1000;
-    x.x4() = 100;
+    x.x3() = 1000.0;
+    x.x4() = 1.0;
     
     // System
-    SystemModel sys(0.002, 0.728);
+    SystemModel sys(0.002, 0.6);
 
     // Control input
     Control u;
@@ -97,10 +97,10 @@ int main(int argc, char** argv)
     // Save covariance for later
     Kalman::Covariance<State> cov = ekf.getCovariance();
     // Set initial values for the covariance
-    cov(0,0) = 1e-5;
-    cov(1,1) = 1e-6;
-    cov(2,2) = 1e6;
-    cov(3,3) = 500;
+    cov(0,0) = 1;
+    cov(1,1) = 1;
+    cov(2,2) = 3e6;
+    cov(3,3) = 40;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -110,15 +110,15 @@ int main(int argc, char** argv)
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
-    cov(0,0) = 1.3163528845868779e-12;
-    cov(1,1) = 3.606320700356974e-10;
+    cov(0,0) = 0.0;
+    cov(1,1) = 3e-7;
     cov(2,2) = 0.0;
     cov(3,3) = 0.0;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 5e-6;
+    cov2(0,0) = 5e-5;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
@@ -160,6 +160,10 @@ int main(int argc, char** argv)
                     << "," << x_ukf.x1() << "," << x_ukf.x2() << "," << x_ukf.x3() << "," << x_ukf.x4()
                     << "," << x_afekf.x1() << "," << x_afekf.x2() << "," << x_afekf.x3() << "," << x_afekf.x4()
                     << "," << x.x1() << "," << x.x2() << "," << x.x3() << "," << x.x4()
+        // Print the covariance of ekf and ukf
+                    << "," << ekf.getCovariance()(0,0) << "," << ekf.getCovariance()(1,1) << "," << ekf.getCovariance()(2,2) << "," << ekf.getCovariance()(3,3)
+                    << "," << ukf.getCovariance()(0,0) << "," << ukf.getCovariance()(1,1) << "," << ukf.getCovariance()(2,2) << "," << ukf.getCovariance()(3,3)
+                    << "," << data[i-1][4]
                     << std::endl;
     }
     

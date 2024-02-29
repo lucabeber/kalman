@@ -8,7 +8,7 @@
 #include <vector>
 
 
-#include "SystemModelRK4.hpp"
+#include "SystemModelEulero.hpp"
 #include "VelocityMeasurementModel.hpp"
 
 #include <kalman/ExtendedKalmanFilter.hpp>

@@ -121,12 +121,13 @@ public:
         /*Dynamics of the model:
         x = [
             x(1) + dT * x(2);
-            x(2) - dT/(m0+m)*( -k0*xd - c0*xdp + x(1)*(k0+x(3)) + x(2)*(c0+x(4)) ) + w;
+            x(2) - dT/(ls_param2(3))*( -f + x(1)^(1.5)*(x(3)) + x(2)*(x(4))*x(1)^(0.5) );
             x(3);
             x(4); 
-        ];*/
+        ];
+        */
         x_.x1() = x.x1() + x.x2()*dT;
-        x_.x2() = x.x2() - dT/(m)*( k0*u.u() + pow(x.x1(),3/2)*(x.x3()) + x.x2()*pow(x.x1(),1/2)*(c0+x.x4()) );
+        x_.x2() = x.x2() - dT/(m)*( k0 * u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4()) + c0*x.x2() );
         x_.x3() = x.x3();
         x_.x4() = x.x4();
         
@@ -160,7 +161,7 @@ public:
         // partial derivative of x.x1() w.r.t. x.x2()
         this->F( S::POSITION, S::VELOCITY ) = dT;
         // partial derivative of x.x2() w.r.t. x.x1()
-        this->F( S::VELOCITY, S::POSITION ) = -((dT( 3 * x.x3() * x.x1() + x.x4() * x.x2() ))/(2 * (m) * sqrt(abs(x.x1()))));
+        this->F( S::VELOCITY, S::POSITION ) = -((dT * ( 3 * x.x3() * x.x1() + x.x4() * x.x2() ))/(2 * (m) * sqrt(abs(x.x1()))));
         // partial derivative of x.x2() w.r.t. x.x2()
         this->F( S::VELOCITY, S::VELOCITY ) = 1 - ((dT * (c0 + x.x4() * sqrt(abs(x.x1()))))/(m));
         // partial derivative of x.x2() w.r.t. x.x3()

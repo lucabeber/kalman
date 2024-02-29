@@ -97,9 +97,9 @@ int main(int argc, char** argv)
     // Save covariance for later
     Kalman::Covariance<State> cov = ekf.getCovariance();
     // Set initial values for the covariance
-    cov(0,0) = 1e-5;
-    cov(1,1) = 1e-6;
-    cov(2,2) = 1e5;
+    cov(0,0) = 1;
+    cov(1,1) = 1;
+    cov(2,2) = 3e6;
     cov(3,3) = 250;
 
     // Set covariance of the filters
@@ -128,8 +128,8 @@ int main(int argc, char** argv)
     // Initialize the state with true values
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 3473.4;
-    x.x4() = 194.54;
+    x.x3() = 2885.6;
+    x.x4() = 101.54;
 
     for(size_t i = 1; i < N; i++)
     {
@@ -139,9 +139,9 @@ int main(int argc, char** argv)
         x = sys.f(x, u);
         
         // Predict state for current time-step using the filters
-        auto x_ekf = ekf.predict(sys, u);
-        auto x_ukf = ukf.predict(sys, u);
-        auto x_afekf = afekf.predict(sys, u);    
+        auto x_ekf_tmp = ekf.predict(sys, u);
+        auto x_ukf_tmp = ukf.predict(sys, u);
+        auto x_afekf_tmp = afekf.predict(sys, u);    
 
         // Get the measurement of velocity
         VelocityMeasurement vel;
@@ -150,9 +150,9 @@ int main(int argc, char** argv)
     //     // force += noise(generator);
 
         // Update UKF
-        x_ekf = ekf.update(vm, vel);
-        x_ukf = ukf.update(vm, vel);
-        x_afekf = afekf.update(vm, sys, vel);
+        auto x_ekf = ekf.update(vm, vel);
+        auto x_ukf = ukf.update(vm, vel);
+        auto x_afekf = afekf.update(vm, sys, vel);
 
         // Print to stdout as csv format
         std::cout   << data[i][0] << "," << data[i][1] << "," << data[i][2] << "," << vel.v() 
@@ -160,6 +160,10 @@ int main(int argc, char** argv)
                     << "," << x_ukf.x1() << "," << x_ukf.x2() << "," << x_ukf.x3() << "," << x_ukf.x4()
                     << "," << x_afekf.x1() << "," << x_afekf.x2() << "," << x_afekf.x3() << "," << x_afekf.x4()
                     << "," << x.x1() << "," << x.x2() << "," << x.x3() << "," << x.x4()
+                    // Print the value of ekf and ukf after the predict step
+                    << "," << x_ekf_tmp.x1() << "," << x_ekf_tmp.x2() << "," << x_ekf_tmp.x3() << "," << x_ekf_tmp.x4()
+                    << "," << x_ukf_tmp.x1() << "," << x_ukf_tmp.x2() << "," << x_ukf_tmp.x3() << "," << x_ukf_tmp.x4()
+                    << "," << data[i-1][4]
                     << std::endl;
     }
     

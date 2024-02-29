@@ -22,6 +22,11 @@ if __name__ == "__main__":
     and it's error for the three filter strategies used in the example: Predict, EKF, UKF
     """
 
+    try:
+        sp.run(["cmake", "--build", "build/", "--config", "Debug", "--target", "all", "-j", "18"])
+    except:
+        raise RuntimeError("Failed to build example")
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--makeplot", help="Set to visualize output.", action="store_true")
     parser.add_argument("--path_to_exec", help="Path to executable, relative or absolute", default="../../build")
@@ -38,7 +43,7 @@ if __name__ == "__main__":
     for line in lines:
         # convert to string
         line_string = str(line.splitlines()[0], "utf-8")
-        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((20, 1))
+        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((29, 1))
         if data is None:
             data = line_data
         else:
@@ -74,7 +79,18 @@ if __name__ == "__main__":
         # ax2.set_ylabel("RMS Error")
         # ax2.set_title("RMS Error of Cartesian Position")
         # Set window title
+        plt.show()
 
+        # Plot the reconstructed force vs the real force
+        fig, (ax1, ax2) = plt.subplots(2, 1)
+        ax1.plot(time_steps, data[-1, :length], color="r", label="F")
+        ax1.plot(time_steps, data[4, :length] * data[6, :length] + data[5, :length] * data[7, :length], color="g", label="F-ekf")
+        ax1.plot(time_steps, data[8, :length] * data[10, :length] + data[9, :length] * data[11, :length], color="b", label="F-ukf")
+        # error between the estimated and the real force
+        ax2.plot(time_steps, data[-1, :length] - data[4, :length] * data[6, :length] - data[5, :length] * data[7, :length], color="r", label="F-err-ekf")
+        ax2.plot(time_steps, data[-1, :length] - data[8, :length] * data[10, :length] - data[9, :length] * data[11, :length], color="b", label="F-err-ukf")
+        ax1.legend()
+        ax2.legend()
         plt.show()
 
     # Estimate the mean square error of the estimate penetration data[2, :] and data[4, :], 
@@ -85,6 +101,11 @@ if __name__ == "__main__":
     # Print in terminal the mean square error of the estimate penetration and velocity
     print("Mean square error of the estimate penetration: ", mean_square_error_pen)
     print("Mean square error of the estimate velocity: ", mean_square_error_vel)
+    print("Stiffness at 2 seconds efk: ", data[6, 2*500])
+    print("Stiffness at 2 seconds ukf: ", data[10, 2*500])
+    print("Damping at 2 seconds efk: ", data[7, 2*500])
+    print("Damping at 2 seconds ukf: ", data[11, 2*500])
+
     
         
 
