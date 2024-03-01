@@ -65,11 +65,11 @@ int main(int argc, char** argv)
 
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 1000;
-    x.x4() = 100;
+    x.x3() = 3473.4;
+    x.x4() = 165.54;
     
     // System
-    SystemModel sys(0.002, 0.6, 1000, 2*sqrt(1000));
+    SystemModel sys(0.002, 0.7, 1000, 2*sqrt(1000));
 
     // Control input
     Control u;
@@ -110,15 +110,15 @@ int main(int argc, char** argv)
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
-    cov(0,0) = 0.0;
+    cov(0,0) = 1e-12;
     cov(1,1) = 3.606320700356974e-7;
-    cov(2,2) = 0.0;
-    cov(3,3) = 0.0;
+    cov(2,2) = 1;
+    cov(3,3) = 1e-2;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 5e-6;
+    cov2(0,0) = 5e-3;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 

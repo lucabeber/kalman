@@ -81,8 +81,8 @@ if __name__ == "__main__":
         # ax2.set_ylabel("RMS Error")
         # ax2.set_title("RMS Error of Cartesian Position")
         # Set window title
-        plt.show()
-        fig, (ax5, ax6) = plt.subplots(2, 1)
+        # plt.show()
+        fig2, (ax5, ax6) = plt.subplots(2, 1)
         # Plot the covariance of the estimate state ekf
         ax5.plot(time_steps, data[20, :length], color="g", label="P11-ekf")
         ax5.plot(time_steps, data[21, :length], color="b", label="P22-ekf")
@@ -94,40 +94,40 @@ if __name__ == "__main__":
         ax6.plot(time_steps, data[26, :length], color="orange", label="P33-ukf")
         ax6.plot(time_steps, data[27, :length], color="purple", label="P44-ukf")
         ax6.legend()
-        plt.show()
+        # plt.show()
 
         # Plot the reconstructed force vs the real force
-        fig, (ax1, ax2) = plt.subplots(2, 1)
-        ax1.plot(time_steps, data[-1, :length], color="r", label="F")
-        ax1.plot(time_steps, data[4, :length] * data[6, :length] + data[5, :length] * data[7, :length], color="g", label="F-ekf")
-        ax1.plot(time_steps, data[8, :length] * data[10, :length] + data[9, :length] * data[11, :length], color="b", label="F-ukf")
+        fig3, (ax7, ax8) = plt.subplots(2, 1)
+        ax7.plot(time_steps, data[-1, :length], color="r", label="F")
+        ax7.plot(time_steps, data[4, :length] * data[6, :length] + data[5, :length] * data[7, :length], color="g", label="F-ekf")
+        ax7.plot(time_steps, data[8, :length] * data[10, :length] + data[9, :length] * data[11, :length], color="b", label="F-ukf")
         # error between the estimated and the real force
-        ax2.plot(time_steps, data[-1, :length] - data[4, :length] * data[6, :length] - data[5, :length] * data[7, :length], color="r", label="F-err-ekf")
-        ax2.plot(time_steps, data[-1, :length] - data[8, :length] * data[10, :length] - data[9, :length] * data[11, :length], color="b", label="F-err-ukf")
-        ax1.legend()
-        ax2.legend()
-        plt.show()
+        ax8.plot(time_steps, data[-1, :length] - data[4, :length] * data[6, :length] - data[5, :length] * data[7, :length], color="r", label="F-err-ekf")
+        ax8.plot(time_steps, data[-1, :length] - data[8, :length] * data[10, :length] - data[9, :length] * data[11, :length], color="b", label="F-err-ukf")
+        ax7.legend()
+        ax8.legend()
+        # plt.show()
 
-        fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1)
+        fig4, (ax11, ax22, ax33, ax44) = plt.subplots(4, 1)
         # error between the estimated and the real penetration
-        ax1.plot(time_steps, data[2, :length] - data[4, :length], color="r", label="update-err-x1-ekf")
-        ax1.plot(time_steps, data[2, :length] - data[8, :length], color="b", label="update-err-x1-ukf")
-        ax1.plot(time_steps, data[2, :length] - data[28, :length], color="g", label="pred-err-x1-ekf")
-        ax1.plot(time_steps, data[2, :length] - data[32, :length], color="orange", label="pred-err-x1-ukf")
+        ax11.plot(time_steps, data[2, :length] - data[4, :length], color="r", label="update-err-x1-ekf")
+        ax11.plot(time_steps, data[2, :length] - data[8, :length], color="r", label="update-err-x1-ufk")
+        ax11.plot(time_steps, data[2, :length] - data[28, :length], color="g", label="pred-err-x1-ekf")
+        ax11.plot(time_steps, data[2, :length] - data[32, :length], color="orange", label="pred-err-x1-ukf")
         # error between the estimated and the real velocity
-        ax2.plot(time_steps, data[3, :length] - data[5, :length], color="r", label="update-err-x2-ekf")
-        ax2.plot(time_steps, data[3, :length] - data[9, :length], color="b", label="update-err-x2-ukf")
-        ax2.plot(time_steps, data[3, :length] - data[29, :length], color="g", label="pred-err-x2-ekf")
-        ax2.plot(time_steps, data[3, :length] - data[33, :length], color="orange", label="pred-err-x2-ukf")
-        ax1.legend()
-        ax2.legend()
+        ax22.plot(time_steps, data[3, :length] - data[5, :length], color="r", label="update-err-x2-ekf")
+        ax22.plot(time_steps, data[3, :length] - data[9, :length], color="b", label="update-err-x2-ukf")
+        ax22.plot(time_steps, data[3, :length] - data[29, :length], color="g", label="pred-err-x2-ekf")
+        ax22.plot(time_steps, data[3, :length] - data[33, :length], color="orange", label="pred-err-x2-ukf")
+        ax11.legend()
+        ax22.legend()
         # error between the predict and the update
-        ax3.plot(time_steps, data[4, :length] - data[28, :length], color="r", label="internal-error-x1-ekf")
-        ax3.plot(time_steps, data[8, :length] - data[32, :length], color="b", label="internal-error-x1-ukf")
-        ax4.plot(time_steps, data[5, :length] - data[29, :length], color="r", label="internal-error-x2-ekf")
-        ax4.plot(time_steps, data[9, :length] - data[33, :length], color="b", label="internal-error-x2-ukf")
-        ax3.legend()
-        ax4.legend()
+        ax33.plot(time_steps, data[4, :length] - data[28, :length], color="r", label="internal-error-x1-ekf")
+        ax33.plot(time_steps, data[8, :length] - data[32, :length], color="b", label="internal-error-x1-ukf")
+        ax44.plot(time_steps, data[5, :length] - data[29, :length], color="r", label="internal-error-x2-ekf")
+        ax44.plot(time_steps, data[9, :length] - data[33, :length], color="b", label="internal-error-x2-ukf")
+        ax33.legend()
+        ax44.legend()
         plt.show()
 
     
@@ -136,8 +136,8 @@ if __name__ == "__main__":
 
     # Estimate the mean square error of the estimate penetration data[2, :] and data[4, :], 
     # and of the estimated velocity data[3, :] and data[5, :].
-    mean_square_error_pen = np.mean((data[2, :] - data[16, :])**2)/np.size(data[2, :])
-    mean_square_error_vel = np.mean((data[3, :] - data[17, :])**2)/np.size(data[3, :])
+    mean_square_error_pen = np.sum((data[2, :] - data[16, :])**2)/np.size(data[2, :])
+    mean_square_error_vel = np.sum((data[3, :] - data[17, :])**2)/np.size(data[3, :])
     
 
     # Print in terminal the mean square error of the estimate penetration and velocity

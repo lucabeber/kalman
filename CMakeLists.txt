@@ -66,6 +66,7 @@ if(KALMAN_BUILD_EXAMPLES)
   add_executable(experimentNoFTNL "examples/RealEstNoFTNL/main.cpp")
   add_executable(experimentFTExp "examples/RealEstFTExp/main.cpp")
   add_executable(experimentNoFTExp "examples/RealEstNoFTExp/main.cpp")
+  add_executable(experimentFTNL "examples/RealEstFTNL/main.cpp")
 endif()
 
 # Unit Tests

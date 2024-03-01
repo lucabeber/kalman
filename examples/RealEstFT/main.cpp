@@ -63,11 +63,14 @@ int main(int argc, char** argv)
     x.x3() = 1.0;
     x.x4() = 1.0;
 
+    // x.x1() = data[0][2];    
+    // x.x2() = data[0][3];
+    // x.x3() = 1000.0;
+    // x.x4() = 1.0;
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 1000.0;
-    x.x4() = 1.0;
-    
+    x.x3() = 3473.4;
+    x.x4() = 124.54;
     // System
     SystemModel sys(0.002, 0.6);
 
@@ -110,15 +113,15 @@ int main(int argc, char** argv)
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
-    cov(0,0) = 0.0;
-    cov(1,1) = 3e-8;
+    cov(0,0) = 1.40248529535625e-08;
+    cov(1,1) = 2.972102394160729e-06;
     cov(2,2) = 0.0;
     cov(3,3) = 0.0;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 5e-6;
+    cov2(0,0) = 5e-5;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
@@ -129,7 +132,7 @@ int main(int argc, char** argv)
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
     x.x3() = 3473.4;
-    x.x4() = 194.54;
+    x.x4() = 124.54;
 
     for(size_t i = 1; i < N; i++)
     {

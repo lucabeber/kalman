@@ -21,12 +21,13 @@ if __name__ == "__main__":
     run example_robot1 and, if optional command line flag \"makeplot\" is set, plot the cartesian position
     and it's error for the three filter strategies used in the example: Predict, EKF, UKF
     """
-
+    # run cmake command to build the example with the following command '/usr/bin/cmake --build "/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/build" --config Debug --target all -j 18 --"\'
     try:
         sp.run(["cmake", "--build", "build/", "--config", "Debug", "--target", "all", "-j", "18"])
     except:
         raise RuntimeError("Failed to build example")
 
+        
     parser = argparse.ArgumentParser()
     parser.add_argument("--makeplot", help="Set to visualize output.", action="store_true")
     parser.add_argument("--path_to_exec", help="Path to executable, relative or absolute", default="../../build")
@@ -34,7 +35,7 @@ if __name__ == "__main__":
 
     # raise a generic RunTimeError if executable fails for any reason
     try:
-        lines = run_example(args.path_to_exec + "/experimentNoFT")
+        lines = run_example(args.path_to_exec + "/experimentFTNL")
     except:
         raise RuntimeError("Failed to run experiment")
     
@@ -50,8 +51,9 @@ if __name__ == "__main__":
             data = np.hstack((data, line_data))
     # length of the data
     # plot the data only if flag is set
-    end_time = 10
+    end_time = 15
     if args.makeplot:
+        # create a numpy array of time steps every 1/500 seconds
         time_steps = np.arange(0, end_time, 1/500)
         length = len(time_steps)
         # Create 4 subplots
@@ -109,14 +111,14 @@ if __name__ == "__main__":
 
         fig4, (ax11, ax22, ax33, ax44) = plt.subplots(4, 1)
         # error between the estimated and the real penetration
-        ax11.plot(time_steps, data[2, :length] - data[28, :length], color="g", label="pred-err-x1-ekf")
+        # ax11.plot(time_steps, data[2, :length] - data[4, :length], color="r", label="update-err-x1-ekf")
+        ax11.plot(time_steps, data[2, :length] - data[8, :length], color="r", label="update-err-x1-ufk")
+        # ax11.plot(time_steps, data[2, :length] - data[28, :length], color="g", label="pred-err-x1-ekf")
         ax11.plot(time_steps, data[2, :length] - data[32, :length], color="orange", label="pred-err-x1-ukf")
-        ax11.plot(time_steps, data[2, :length] - data[4, :length], color="r", label="update-err-x1-ekf")
-        ax11.plot(time_steps, data[2, :length] - data[8, :length], color="b", label="update-err-x1-ukf")
         # error between the estimated and the real velocity
-        ax22.plot(time_steps, data[3, :length] - data[5, :length], color="r", label="update-err-x2-ekf")
+        # ax22.plot(time_steps, data[3, :length] - data[5, :length], color="r", label="update-err-x2-ekf")
         ax22.plot(time_steps, data[3, :length] - data[9, :length], color="b", label="update-err-x2-ukf")
-        ax22.plot(time_steps, data[3, :length] - data[29, :length], color="g", label="pred-err-x2-ekf")
+        # ax22.plot(time_steps, data[3, :length] - data[29, :length], color="g", label="pred-err-x2-ekf")
         ax22.plot(time_steps, data[3, :length] - data[33, :length], color="orange", label="pred-err-x2-ukf")
         ax11.legend()
         ax22.legend()
@@ -129,24 +131,15 @@ if __name__ == "__main__":
         ax44.legend()
         plt.show()
         
+
     # Estimate the mean square error of the estimate penetration data[2, :] and data[4, :], 
     # and of the estimated velocity data[3, :] and data[5, :].
-    mean_square_error_pen = np.mean((data[2, :] - data[16, :])**2)/np.size(data[2, :])
-    mean_square_error_vel = np.mean((data[3, :] - data[17, :])**2)/np.size(data[3, :])
+    mean_square_error_pen = np.sum((data[2, :] - data[16, :])**2)/np.size(data[2, :])
+    mean_square_error_vel = np.sum((data[3, :] - data[17, :])**2)/np.size(data[3, :])
 
-   
     # Print in terminal the mean square error of the estimate penetration and velocity
     print("Mean square error of the estimate penetration: ", mean_square_error_pen)
     print("Mean square error of the estimate velocity: ", mean_square_error_vel)
-    print("Stiffness at 2 seconds efk: ", data[6, 2*500])
-    print("Stiffness at 2 seconds ukf: ", data[10, 2*500])
-    print("Damping at 2 seconds efk: ", data[7, 2*500])
-    print("Damping at 2 seconds ukf: ", data[11, 2*500])
-
-    # Print in terminal the stiffness and damping at 10 seconds
-    print("Stiffness at 10 seconds efk: ", data[6, 10*500])
-    print("Stiffness at 10 seconds ukf: ", data[10, 10*500])
-    print("Damping at 10 seconds efk: ", data[7, 10*500])
-    print("Damping at 10 seconds ukf: ", data[11, 10*500]) 
+    
         
 

@@ -65,11 +65,16 @@ int main(int argc, char** argv)
 
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 3e4;//1e4;
-    x.x4() = 1e3;//1e3;
+    x.x3() = 0;//1e4;
+    x.x4() = 0;//1e3;
     
+    // x.x1() = data[0][2];    
+    // x.x2() = data[0][3];
+    // x.x3() = 23348;
+    // x.x4() = 1166;
+
     // System
-    SystemModel sys(0.002, 0.6, 1000, 2*sqrt(1000));
+    SystemModel sys(0.002, 0.6e-3, 1000, 2*sqrt(1000));
 
     // Control input
     Control u;
@@ -99,8 +104,8 @@ int main(int argc, char** argv)
     // Set initial values for the covariance
     cov(0,0) = 1;
     cov(1,1) = 1;
-    cov(2,2) = 1e5;
-    cov(3,3) = 250;
+    cov(2,2) = 1;
+    cov(3,3) = 1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -110,15 +115,15 @@ int main(int argc, char** argv)
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
-    cov(0,0) = 0.0;
-    cov(1,1) = 3.606320700356974e-7;
-    cov(2,2) = 0.0;
-    cov(3,3) = 0.0;
+    cov(0,0) = 7.882858412500001e-7;
+    cov(1,1) = 5.215782682106087e-4;
+    cov(2,2) = 1;
+    cov(3,3) = 1;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 5e-5;
+    cov2(0,0) = 1e-1;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
@@ -128,13 +133,13 @@ int main(int argc, char** argv)
     // Initialize the state with true values
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 57663;
-    x.x4() = 2809.2;
+    x.x3() = 0.7395;
+    x.x4() = 0.0369;
 
     for(size_t i = 1; i < N; i++)
     {
         // Update control input
-        u.u() = data[i-1][1] - data[i-1][0];
+        u.u() = data[i-1][4];
         // Simulate system
         x = sys.f(x, u);
         
