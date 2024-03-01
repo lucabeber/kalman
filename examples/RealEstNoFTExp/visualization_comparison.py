@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     # raise a generic RunTimeError if executable fails for any reason
     try:
-        lines = run_example(args.path_to_exec + "/experiment")
+        lines = run_example(args.path_to_exec + "/experimentNoFTExp")
     except:
         raise RuntimeError("Failed to run experiment")
     
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     for line in lines:
         # convert to string
         line_string = str(line.splitlines()[0], "utf-8")
-        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((37, 1))
+        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((29, 1))
         if data is None:
             data = line_data
         else:
@@ -97,6 +97,7 @@ if __name__ == "__main__":
         plt.show()
 
         # Plot the reconstructed force vs the real force
+        surf = -0.2570
         fig, (ax1, ax2) = plt.subplots(2, 1)
         ax1.plot(time_steps, data[-1, :length], color="r", label="F")
         ax1.plot(time_steps, data[4, :length] * data[6, :length] + data[5, :length] * data[7, :length], color="g", label="F-ekf")
@@ -108,27 +109,6 @@ if __name__ == "__main__":
         ax2.legend()
         plt.show()
 
-        fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1)
-        # error between the estimated and the real penetration
-        ax1.plot(time_steps, data[2, :length] - data[4, :length], color="r", label="update-err-x1-ekf")
-        ax1.plot(time_steps, data[2, :length] - data[8, :length], color="b", label="update-err-x1-ukf")
-        ax1.plot(time_steps, data[2, :length] - data[28, :length], color="g", label="pred-err-x1-ekf")
-        ax1.plot(time_steps, data[2, :length] - data[32, :length], color="orange", label="pred-err-x1-ukf")
-        # error between the estimated and the real velocity
-        ax2.plot(time_steps, data[3, :length] - data[5, :length], color="r", label="update-err-x2-ekf")
-        ax2.plot(time_steps, data[3, :length] - data[9, :length], color="b", label="update-err-x2-ukf")
-        ax2.plot(time_steps, data[3, :length] - data[29, :length], color="g", label="pred-err-x2-ekf")
-        ax2.plot(time_steps, data[3, :length] - data[33, :length], color="orange", label="pred-err-x2-ukf")
-        ax1.legend()
-        ax2.legend()
-        # error between the predict and the update
-        ax3.plot(time_steps, data[4, :length] - data[28, :length], color="r", label="internal-error-x1-ekf")
-        ax3.plot(time_steps, data[8, :length] - data[32, :length], color="b", label="internal-error-x1-ukf")
-        ax4.plot(time_steps, data[5, :length] - data[29, :length], color="r", label="internal-error-x2-ekf")
-        ax4.plot(time_steps, data[9, :length] - data[33, :length], color="b", label="internal-error-x2-ukf")
-        ax3.legend()
-        ax4.legend()
-        plt.show()
 
     
     

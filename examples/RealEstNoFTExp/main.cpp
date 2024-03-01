@@ -8,7 +8,7 @@
 #include <vector>
 
 
-#include "SystemModelEuleroNoFT.hpp"
+#include "SystemModelEuleroFT.hpp"
 #include "VelocityMeasurementModel.hpp"
 
 #include <kalman/ExtendedKalmanFilter.hpp>
@@ -20,7 +20,7 @@
 #include <chrono>
 
 
-using namespace KalmanExperimentsNoFT;
+using namespace KalmanExperimentsFT;
 
 typedef double T;
 
@@ -63,13 +63,14 @@ int main(int argc, char** argv)
     x.x3() = 1.0;
     x.x4() = 1.0;
 
-    x.x1() = data[0][2];    
-    x.x2() = data[0][3];
-    x.x3() = 1000;
-    x.x4() = 100;
+    x.x1() = 0.0;    
+    x.x2() = 0.0;
+    x.x3() = 1.0;
+    x.x4() = 1.0;
+    x.x5() = 0.0;
     
     // System
-    SystemModel sys(0.002, 0.6, 1000, 2*sqrt(1000));
+    SystemModel sys(0.002, 0.6,1000.0,2*sqrt(1000.0));
 
     // Control input
     Control u;
@@ -100,7 +101,8 @@ int main(int argc, char** argv)
     cov(0,0) = 1;
     cov(1,1) = 1;
     cov(2,2) = 3e6;
-    cov(3,3) = 250;
+    cov(3,3) = 40;
+    cov(4,4) = 1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -111,14 +113,17 @@ int main(int argc, char** argv)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
     cov(0,0) = 0.0;
-    cov(1,1) = 3.606320700356974e-7;
+    cov(1,1) = 1e-7;
     cov(2,2) = 0.0;
     cov(3,3) = 0.0;
+    cov(4,4) = 0.0;
+
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
     cov2(0,0) = 5e-6;
+    cov2(1,1) = 5e-6;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
@@ -126,46 +131,45 @@ int main(int argc, char** argv)
     const size_t N = data.size();
 
     // Initialize the state with true values
-    x.x1() = data[0][2];    
+    x.x1() = data[0][0];    
     x.x2() = data[0][3];
     x.x3() = 3473.4;
-    x.x4() = 165.54;
+    x.x4() = 163.54;
+    x.x5() = -0.2570;
 
     for(size_t i = 1; i < N; i++)
     {
         // Update control input
-        u.u() = data[i-1][1] - data[i-1][0];
+        u.u() = data[i-1][1];
         // Simulate system
         x = sys.f(x, u);
         
         // Predict state for current time-step using the filters
-        auto x_ekf_tmp = ekf.predict(sys, u);
-        auto x_ukf_tmp = ukf.predict(sys, u);
-        auto x_afekf_tmp = afekf.predict(sys, u);    
+        auto x_ekf = ekf.predict(sys, u);
+        auto x_ukf = ukf.predict(sys, u);
+        auto x_afekf = afekf.predict(sys, u);    
 
         // Get the measurement of velocity
         VelocityMeasurement vel;
-        vel.v() = data[i][3];
+        vel.p() = data[i][0];
+        vel.v() = -data[i][3];
     //     // Measurement is affected by noise as well
     //     // force += noise(generator);
 
         // Update UKF
-        auto x_ekf = ekf.update(vm, vel);
-        auto x_ukf = ukf.update(vm, vel);
-        auto x_afekf = afekf.update(vm, sys, vel);
+        x_ekf = ekf.update(vm, vel);
+        x_ukf = ukf.update(vm, vel);
+        x_afekf = afekf.update(vm, sys, vel);
 
         // Print to stdout as csv format
-        std::cout   << -0.2570 - data[i-1][0] << "," << data[i][1] << "," << data[i][2] << "," << vel.v() 
+        std::cout   << data[i][0] << "," << data[i][1] << "," << vel.p() << "," << vel.v() 
                     << "," << x_ekf.x1() << "," << x_ekf.x2() << "," << x_ekf.x3() << "," << x_ekf.x4()
                     << "," << x_ukf.x1() << "," << x_ukf.x2() << "," << x_ukf.x3() << "," << x_ukf.x4()
                     << "," << x_afekf.x1() << "," << x_afekf.x2() << "," << x_afekf.x3() << "," << x_afekf.x4()
                     << "," << x.x1() << "," << x.x2() << "," << x.x3() << "," << x.x4()
-                    // Print the value of ekf and ukf after the predict step
-                    << "," << x_ekf_tmp.x1() << "," << x_ekf_tmp.x2() << "," << x_ekf_tmp.x3() << "," << x_ekf_tmp.x4()
-                    << "," << x_ukf_tmp.x1() << "," << x_ukf_tmp.x2() << "," << x_ukf_tmp.x3() << "," << x_ukf_tmp.x4()
-                    // Print the value of ekf and ukf after the predict step
-                    << "," << x_ekf_tmp.x1() << "," << x_ekf_tmp.x2() << "," << x_ekf_tmp.x3() << "," << x_ekf_tmp.x4()
-                    << "," << x_ukf_tmp.x1() << "," << x_ukf_tmp.x2() << "," << x_ukf_tmp.x3() << "," << x_ukf_tmp.x4()
+        // Print the covariance of ekf and ukf
+                    << "," << ekf.getCovariance()(0,0) << "," << ekf.getCovariance()(1,1) << "," << ekf.getCovariance()(2,2) << "," << ekf.getCovariance()(3,3)
+                    << "," << ukf.getCovariance()(0,0) << "," << ukf.getCovariance()(1,1) << "," << ukf.getCovariance()(2,2) << "," << ukf.getCovariance()(3,3)
                     << "," << data[i-1][4]
                     << std::endl;
     }

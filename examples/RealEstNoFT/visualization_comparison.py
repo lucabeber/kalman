@@ -43,7 +43,7 @@ if __name__ == "__main__":
     for line in lines:
         # convert to string
         line_string = str(line.splitlines()[0], "utf-8")
-        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((29, 1))
+        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((37, 1))
         if data is None:
             data = line_data
         else:
@@ -93,11 +93,34 @@ if __name__ == "__main__":
         ax2.legend()
         plt.show()
 
+        fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1)
+        # error between the estimated and the real penetration
+        # ax1.plot(time_steps, data[2, :length] - data[4, :length], color="r", label="up-err-x1-ekf")
+        ax1.plot(time_steps, data[2, :length] - data[8, :length], color="b", label="up-err-x1-ukf")
+        # ax1.plot(time_steps, data[2, :length] - data[28, :length], color="g", label="pred-err-x1-ekf")
+        ax1.plot(time_steps, data[2, :length] - data[32, :length], color="orange", label="pred-err-x1-ukf")
+        # error between the estimated and the real velocity
+        # ax2.plot(time_steps, data[3, :length] - data[5, :length], color="r", label="up-err-x2-ekf")
+        ax2.plot(time_steps, data[3, :length] - data[9, :length], color="b", label="up-err-x2-ukf")
+        # ax2.plot(time_steps, data[3, :length] - data[29, :length], color="g", label="pred-err-x2-ekf")
+        ax2.plot(time_steps, data[3, :length] - data[33, :length], color="orange", label="pred-err-x2-ukf")
+        ax1.legend()
+        ax2.legend()
+        # error between the predict and the update
+        # ax3.plot(time_steps, data[4, :length] - data[28, :length], color="r", label="internal-error-x1-ekf")
+        ax3.plot(time_steps, data[8, :length] - data[32, :length], color="b", label="internal-error-x1-ukf")
+        # ax4.plot(time_steps, data[5, :length] - data[29, :length], color="r", label="internal-error-x2-ekf")
+        ax4.plot(time_steps, data[9, :length] - data[33, :length], color="b", label="internal-error-x2-ukf")
+        ax3.legend()
+        ax4.legend()
+        plt.show()
+
     # Estimate the mean square error of the estimate penetration data[2, :] and data[4, :], 
     # and of the estimated velocity data[3, :] and data[5, :].
     mean_square_error_pen = np.mean((data[2, :] - data[16, :])**2)/np.size(data[2, :])
     mean_square_error_vel = np.mean((data[3, :] - data[17, :])**2)/np.size(data[3, :])
 
+   
     # Print in terminal the mean square error of the estimate penetration and velocity
     print("Mean square error of the estimate penetration: ", mean_square_error_pen)
     print("Mean square error of the estimate velocity: ", mean_square_error_vel)
@@ -106,6 +129,10 @@ if __name__ == "__main__":
     print("Damping at 2 seconds efk: ", data[7, 2*500])
     print("Damping at 2 seconds ukf: ", data[11, 2*500])
 
-    
+    # Print in terminal the stiffness and damping at 10 seconds
+    print("Stiffness at 10 seconds efk: ", data[6, 10*500])
+    print("Stiffness at 10 seconds ukf: ", data[10, 10*500])
+    print("Damping at 10 seconds efk: ", data[7, 10*500])
+    print("Damping at 10 seconds ukf: ", data[11, 10*500]) 
         
 
