@@ -51,8 +51,8 @@ if __name__ == "__main__":
             data = np.hstack((data, line_data))
     # length of the data
     # plot the data only if flag is set
-    end_time = 15
-    if args.makeplot:
+    end_time = 9
+    if True:
         # create a numpy array of time steps every 1/500 seconds
         time_steps = np.arange(0, end_time, 1/500)
         length = len(time_steps)
@@ -61,11 +61,11 @@ if __name__ == "__main__":
         ax1.plot(time_steps, data[2, :length], color="r", label="x1")
         ax1.plot(time_steps, data[4, :length], color="g", label="x1-ekf")
         ax1.plot(time_steps, data[8, :length], color="b", label="x1-ukf")
-        ax1.plot(time_steps, data[16, :length], color="orange", label="x1-sim")
+        # ax1.plot(time_steps, data[16, :length], color="orange", label="x1-sim")
         ax2.plot(time_steps, data[3, :length], color="r", label="x2")
         ax2.plot(time_steps, data[5, :length], color="g", label="x2-ekf")
         ax2.plot(time_steps, data[9, :length], color="b", label="x2-ukf")
-        ax2.plot(time_steps, data[17, :length], color="orange", label="x2-sim")
+        # ax2.plot(time_steps, data[17, :length], color="orange", label="x2-sim")
         ax1.legend()
         ax2.legend()
         ax3.plot(time_steps, data[6, :length], color="g", label="x3-ekf")
