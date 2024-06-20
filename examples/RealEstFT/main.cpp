@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_5hz.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_hard_cancer.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -67,12 +67,12 @@ int main(int argc, char** argv)
     // x.x2() = data[0][3];
     // x.x3() = 1000.0;
     // x.x4() = 1.0;
-    x.x1() = data[0][2];    
-    x.x2() = data[0][3];
-    x.x3() = 3473.4;
-    x.x4() = 124.54;
+    x.x1() = 1;    
+    x.x2() = 1;
+    x.x3() = 0;
+    x.x4() = 0;
     // System
-    SystemModel sys(0.002, 0.6);
+    SystemModel sys(0.002, 0.6e-3);
 
     // Control input
     Control u;
@@ -102,8 +102,8 @@ int main(int argc, char** argv)
     // Set initial values for the covariance
     cov(0,0) = 1;
     cov(1,1) = 1;
-    cov(2,2) = 3e5;
-    cov(3,3) = 100;
+    cov(2,2) = 1;
+    cov(3,3) = 1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -113,15 +113,15 @@ int main(int argc, char** argv)
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
-    cov(0,0) = 1.40248529535625e-08;
-    cov(1,1) = 2.972102394160729e-06;
+    cov(0,0) = 1.40248529535625e-7;
+    cov(1,1) = 2.972102394160729e-4;
     cov(2,2) = 0.0;
     cov(3,3) = 0.0;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 5e-5;
+    cov2(0,0) = 1e-2;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
@@ -131,8 +131,8 @@ int main(int argc, char** argv)
     // Initialize the state with true values
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 3473.4;
-    x.x4() = 124.54;
+    x.x3() = data[0][5];
+    x.x4() = data[0][6];
 
     for(size_t i = 1; i < N; i++)
     {

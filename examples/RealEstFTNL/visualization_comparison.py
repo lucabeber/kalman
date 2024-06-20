@@ -137,9 +137,25 @@ if __name__ == "__main__":
     mean_square_error_pen = np.sum((data[2, :] - data[16, :])**2)/np.size(data[2, :])
     mean_square_error_vel = np.sum((data[3, :] - data[17, :])**2)/np.size(data[3, :])
 
-    # Print in terminal the mean square error of the estimate penetration and velocity
-    print("Mean square error of the estimate penetration: ", mean_square_error_pen)
-    print("Mean square error of the estimate velocity: ", mean_square_error_vel)
+    # Print reference values of stiffness and damping
+    print("Stiffness: ", data[18,1])
+    print("Damping: ", data[19,1])
+
+    # Print in terminal the stiffness and damping at 2 seconds    
+    print("Stiffness at 5 seconds efk: ", data[6, 5*500])
+    print("Stiffness at 5 seconds ukf: ", data[10, 5*500])
+    print("Damping at 5 seconds efk: ", data[7, 5*500])
+    print("Damping at 5 seconds ukf: ", data[11, 5*500])
+
+    # Print in terminal the stiffness and damping at 10 seconds
+    print("Stiffness at 10 seconds efk: ", data[6, 10*500])
+    print("Stiffness at 10 seconds ukf: ", data[10, 10*500])
+    print("Damping at 10 seconds efk: ", data[7, 10*500])
+    print("Damping at 10 seconds ukf: ", data[11, 10*500])
+
+
+    # Save the data in a file in ../../experiments/EKF/est1_hard_cancer.txt
+    np.savetxt("../../experiments/EKF/est3_hard_cancer.txt", data, delimiter=",")
     
         
 

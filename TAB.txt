@@ -1,0 +1,12 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+\begin{tabular}{llllllllllll}
+                                                   &                            & \textbf{R$_{1,2}$}          & \textbf{M$_1$ 5 s}          & \textbf{M$_1$ 10 s}         & \textbf{M$_2$ 5 s}    & \textbf{M$_2$ 10 s}   & \textbf{R$_{1,2}$}    & \textbf{M$_3$ 5 s}    & \textbf{M$_3$ 10 s}   & \textbf{M$_4$ 5 s}    & \textbf{M$_4$ 10 s}   \\ \hline
+\multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{S1}}} & \multicolumn{1}{l|}{x$_3$} & \multicolumn{1}{l|}{2.0316} & \multicolumn{1}{l|}{3.453}  & \multicolumn{1}{l|}{3.410}  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} \\ \cline{2-12} 
+\multicolumn{1}{|l|}{}                             & \multicolumn{1}{l|}{x$_4$} & \multicolumn{1}{l|}{0.0925} & \multicolumn{1}{l|}{0.0988} & \multicolumn{1}{l|}{0.0984} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} \\ \hline
+\multicolumn{1}{|l|}{\textbf{S2}}                  & \multicolumn{1}{l|}{}      & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} \\ \hline
+\multicolumn{1}{|l|}{\textbf{S3}}                  & \multicolumn{1}{l|}{}      & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} \\ \hline
+\multicolumn{1}{|l|}{\textbf{S4}}                  & \multicolumn{1}{l|}{}      & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{}       & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} \\ \hline
+\end{tabular}
+\end{table}

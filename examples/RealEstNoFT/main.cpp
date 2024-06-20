@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_5hz.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_hard_cancer.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -58,18 +58,14 @@ int main(int argc, char** argv)
     file.close();
     
     State x;
-    x.x1() = 0.0;
-    x.x2() = 0.0;
-    x.x3() = 1.0;
-    x.x4() = 1.0;
 
-    x.x1() = data[0][2];    
-    x.x2() = data[0][3];
-    x.x3() = 3473.4;
-    x.x4() = 165.54;
+    x.x1() = 1;    
+    x.x2() = 1;
+    x.x3() = 0;
+    x.x4() = 0;
     
     // System
-    SystemModel sys(0.002, 0.7, 1000, 2*sqrt(1000));
+    SystemModel sys(0.002, 0.6e-3, 1000e-3, 2*sqrt(1000)*1e-3);
 
     // Control input
     Control u;
@@ -99,8 +95,8 @@ int main(int argc, char** argv)
     // Set initial values for the covariance
     cov(0,0) = 1;
     cov(1,1) = 1;
-    cov(2,2) = 3e6;
-    cov(3,3) = 250;
+    cov(2,2) = 1;
+    cov(3,3) = 1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -110,15 +106,15 @@ int main(int argc, char** argv)
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
-    cov(0,0) = 1e-12;
-    cov(1,1) = 3.606320700356974e-7;
-    cov(2,2) = 1;
+    cov(0,0) = 1e-6;
+    cov(1,1) = 3.606320700356974e-3;
+    cov(2,2) = 1e-2;
     cov(3,3) = 1e-2;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 5e-3;
+    cov2(0,0) = 1e-2;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
@@ -128,8 +124,8 @@ int main(int argc, char** argv)
     // Initialize the state with true values
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 3473.4;
-    x.x4() = 165.54;
+    x.x3() = data[0][5];
+    x.x4() = data[0][6];
 
     for(size_t i = 1; i < N; i++)
     {

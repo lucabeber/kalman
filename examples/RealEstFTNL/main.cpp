@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_5hz.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_hard_cancer.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -58,15 +58,11 @@ int main(int argc, char** argv)
     file.close();
     
     State x;
-    x.x1() = 0.0;
-    x.x2() = 0.0;
-    x.x3() = 1.0;
-    x.x4() = 1.0;
 
-    x.x1() = data[0][2];    
-    x.x2() = data[0][3];
-    x.x3() = 0;//1e4;
-    x.x4() = 0;//1e3;
+    x.x1() = 1;    
+    x.x2() = 1;
+    x.x3() = 0.1;//1e4;
+    x.x4() = 0.1;//1e3;
     
     // x.x1() = data[0][2];    
     // x.x2() = data[0][3];
@@ -115,15 +111,15 @@ int main(int argc, char** argv)
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
-    cov(0,0) = 7.882858412500001e-7;
-    cov(1,1) = 5.215782682106087e-4;
-    cov(2,2) = 1;
-    cov(3,3) = 1;
+    cov(0,0) = 1e-8;
+    cov(1,1) = 1e-5;
+    cov(2,2) = 0.0;
+    cov(3,3) = 0.0;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 1e-1;
+    cov2(0,0) = 1e-2;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
@@ -133,8 +129,8 @@ int main(int argc, char** argv)
     // Initialize the state with true values
     x.x1() = data[0][2];    
     x.x2() = data[0][3];
-    x.x3() = 0.7395;
-    x.x4() = 0.0369;
+    x.x3() = data[0][7];
+    x.x4() = data[0][8];
 
     for(size_t i = 1; i < N; i++)
     {
