@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_soft_cancer.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -59,10 +59,12 @@ int main(int argc, char** argv)
     
     State x;
 
-    x.x1() = 1;    
-    x.x2() = 1;
+    x.x1() = 0;    
+    x.x2() = 0.1;
     x.x3() = 0.1;//1e4;
     x.x4() = 0.1;//1e3;
+    x.x5() = 0.0;
+    x.x6() = 0.0;
     
     // x.x1() = data[0][2];    
     // x.x2() = data[0][3];
@@ -70,7 +72,7 @@ int main(int argc, char** argv)
     // x.x4() = 1166;
 
     // System
-    SystemModel sys(0.002, 0.057e-3, 1000, 2*sqrt(1000));
+    SystemModel sys(0.002, 0.057e-3, 1000e-3, 2*sqrt(1000)*1e-3);
 
     // Control input
     Control u;
@@ -102,6 +104,8 @@ int main(int argc, char** argv)
     cov(1,1) = 1;
     cov(2,2) = 1;
     cov(3,3) = 1;
+    cov(4,4) = 1;
+    cov(5,5) = 1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -115,6 +119,8 @@ int main(int argc, char** argv)
     cov(1,1) = 1e-5;
     cov(2,2) = 0.0;
     cov(3,3) = 0.0;
+    cov(4,4) = 0.0;
+    cov(5,5) = 0.0;
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise

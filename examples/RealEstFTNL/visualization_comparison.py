@@ -51,8 +51,8 @@ if __name__ == "__main__":
             data = np.hstack((data, line_data))
     # length of the data
     # plot the data only if flag is set
-    end_time = 9
-    if True:
+    end_time = 30
+    if args.makeplot:
         # create a numpy array of time steps every 1/500 seconds
         time_steps = np.arange(0, end_time, 1/500)
         length = len(time_steps)
@@ -68,11 +68,11 @@ if __name__ == "__main__":
         # ax2.plot(time_steps, data[17, :length], color="orange", label="x2-sim")
         ax1.legend()
         ax2.legend()
-        ax3.plot(time_steps, data[6, :length], color="g", label="x3-ekf")
+        # ax3.plot(time_steps, data[6, :length], color="g", label="x3-ekf")
         ax3.plot(time_steps, data[10, :length], color="b", label="x3-ukf")
         ax3.plot(time_steps, data[18, :length], color="orange", label="x3-sim")
         #ax3.plot(time_steps, data[14, :], color="orange", label="x3-afekf")
-        ax4.plot(time_steps, data[7, :length], color="g", label="x4-ekf")
+        # ax4.plot(time_steps, data[7, :length], color="g", label="x4-ekf")
         ax4.plot(time_steps, data[11, :length], color="b", label="x4-ukf")
         ax4.plot(time_steps, data[19, :length], color="orange", label="x4-sim")
         # ax4.plot(time_steps, data[15, :], color="orange", label="x4-afekf")
@@ -100,11 +100,11 @@ if __name__ == "__main__":
         # Plot the reconstructed force vs the real force
         fig3, (ax7, ax8) = plt.subplots(2, 1)
         ax7.plot(time_steps, data[-1, :length], color="r", label="F")
-        ax7.plot(time_steps, data[4, :length] * data[6, :length] + data[5, :length] * data[7, :length], color="g", label="F-ekf")
-        ax7.plot(time_steps, data[8, :length] * data[10, :length] + data[9, :length] * data[11, :length], color="b", label="F-ukf")
+        ax7.plot(time_steps, pow(abs(data[4, :length]),3.0/2.0) * data[6, :length] + pow(abs(data[4, :length]),1.0/2.0) * data[5, :length] * data[7, :length], color="g", label="F-ekf")
+        ax7.plot(time_steps, pow(abs(data[8, :length]),3.0/2.0) * data[10, :length] + pow(abs(data[8, :length]),1.0/2.0) * data[9, :length] * data[11, :length], color="b", label="F-ukf")
         # error between the estimated and the real force
-        ax8.plot(time_steps, data[-1, :length] - data[4, :length] * data[6, :length] - data[5, :length] * data[7, :length], color="r", label="F-err-ekf")
-        ax8.plot(time_steps, data[-1, :length] - data[8, :length] * data[10, :length] - data[9, :length] * data[11, :length], color="b", label="F-err-ukf")
+        ax8.plot(time_steps, data[-1, :length] - pow(abs(data[4, :length]),3.0/2.0) * data[6, :length] + pow(abs(data[4, :length]),1.0/2.0) * data[5, :length] * data[7, :length], color="r", label="F-err-ekf")
+        ax8.plot(time_steps, data[-1, :length] - pow(abs(data[8, :length]),3.0/2.0) * data[10, :length] + pow(abs(data[8, :length]),1.0/2.0) * data[9, :length] * data[11, :length], color="b", label="F-err-ukf")
         ax7.legend()
         ax8.legend()
         # plt.show()
