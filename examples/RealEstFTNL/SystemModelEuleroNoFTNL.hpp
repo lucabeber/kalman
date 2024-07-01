@@ -17,10 +17,10 @@ namespace Estimation
  * @param T Numeric scalar type
  */
 template<typename T>
-class State : public Kalman::Vector<T, 6>
+class State : public Kalman::Vector<T, 8>
 {
 public:
-    KALMAN_VECTOR(State, T, 6)
+    KALMAN_VECTOR(State, T, 8)
     
     //! Penetration inside the soft tissue
     static constexpr size_t POSITION = 0;
@@ -34,6 +34,10 @@ public:
     static constexpr size_t ELASTICITY_CHANGE = 4;
     //! Change in viscosity of the soft tissue
     static constexpr size_t VISCOSITY_CHANGE = 5;
+    //! Acceleration change in elasticity of the soft tissue
+    static constexpr size_t ELASTICITY_CHANGE_CHANGE = 6;
+    //! Acceleration change in viscosity of the soft tissue
+    static constexpr size_t VISCOSITY_CHANGE_CHANGE = 7;
     
     T x1()      const { return (*this)[ POSITION ]; }
     T x2()      const { return (*this)[ VELOCITY ]; }
@@ -41,6 +45,8 @@ public:
     T x4()      const { return (*this)[ VISCOSITY ]; }
     T x5()      const { return (*this)[ ELASTICITY_CHANGE ]; }
     T x6()      const { return (*this)[ VISCOSITY_CHANGE ]; }
+    T x7()      const { return (*this)[ ELASTICITY_CHANGE_CHANGE ]; }
+    T x8()      const { return (*this)[ VISCOSITY_CHANGE_CHANGE ]; }
     
     T& x1()         { return (*this)[ POSITION ]; }
     T& x2()         { return (*this)[ VELOCITY ]; }
@@ -48,6 +54,8 @@ public:
     T& x4()         { return (*this)[ VISCOSITY ]; }
     T& x5()         { return (*this)[ ELASTICITY_CHANGE ]; }
     T& x6()         { return (*this)[ VISCOSITY_CHANGE ]; }
+    T& x7()         { return (*this)[ ELASTICITY_CHANGE_CHANGE ]; }
+    T& x8()         { return (*this)[ VISCOSITY_CHANGE_CHANGE ]; }
 };
 
 /**
@@ -95,13 +103,12 @@ public:
     typedef KalmanExperimentsNoFTNL::Estimation::Control<T> C;
     
     //! Constructor
-    SystemModel( const double dT, const double m, const double k0, const double c0 )
+    SystemModel( const double dT, const double m, const double r)
     {   
         // Set model parameters
         this->dT = dT;
         this->m = m;
-        this->k0 = k0;
-        this->c0 = c0;
+        this->r = r;
     }
     /**
      * @brief Definition of (non-linear) state transition function
@@ -121,8 +128,7 @@ public:
         S x_;
         double dT = this->dT;
         double m = this->m;
-        double k0 = this->k0;
-        double c0 = this->c0;
+        double r = this->r;
         // New x-position given by old x-position plus change in x-direction
         // Change in x-direction is given by the cosine of the (new) orientation
         // times the velocity
@@ -134,12 +140,26 @@ public:
             x(4); 
         ];
         */
-        x_.x1() = x.x1() + x.x2()*dT;
+
+        // if (x.x1() > r)
+        // {
+        //     x_.x1() = x.x1() + x.x2()*dT - 0.5 * dT * dT/(m)*( -u.u() + pow(r,1.5)*(x.x3()) + x.x2()*pow(r,0.5)*(x.x4())) ;
+        //     x_.x2() = x.x2() - dT/(m)*( -u.u() + pow(r,1.5)*(x.x3()) + x.x2()*pow(r,0.5)*(x.x4()));
+        // }
+        // else
+        // {
+        //     x_.x1() = x.x1() + x.x2()*dT - 0.5 * dT * dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4())) ;
+        //     x_.x2() = x.x2() - dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4()));
+        // }
+        x_.x1() = x.x1() + x.x2()*dT - 0.5 * dT * dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4())) ;
         x_.x2() = x.x2() - dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4()));
-        x_.x3() = x.x3() + x.x5()*dT;
-        x_.x4() = x.x4() + x.x6()*dT;
-        x_.x5() = x.x5();
-        x_.x6() = x.x6();
+        x_.x3() = x.x3() + x.x5()*dT + 0.5*x.x7()*dT*dT;
+        x_.x4() = x.x4() + x.x6()*dT + 0.5*x.x8()*dT*dT;
+        x_.x5() = x.x5() + x.x7()*dT;
+        x_.x6() = x.x6() + x.x8()*dT;
+        x_.x7() = x.x7();
+        x_.x8() = x.x8();
+
         
         // Return transitioned state vector
         return x_;
@@ -149,14 +169,11 @@ public:
 
     double dT;
     double m;
-    double k0;
-    double c0;
+    double r;
     
     void updateJacobians( const S& x, const C& u )
     {   
         m = this->m;
-        k0 = this->k0;
-        c0 = this->c0;
         dT = this->dT;
 
         /*
@@ -180,8 +197,12 @@ public:
         this->F( S::VELOCITY, S::VISCOSITY ) = -((dT * sqrt(abs(x.x1())) * x.x2())/(m));
         // partial derivative of x.x3() w.r.t. x.x5()
         this->F( S::ELASTICITY, S::ELASTICITY_CHANGE ) = dT;
+        // partial derivative of x.x3() w.r.t. x.x7()
+        this->F( S::ELASTICITY, S::ELASTICITY_CHANGE_CHANGE ) = 0.5 * dT * dT;
         // partial derivative of x.x4() w.r.t. x.x6()
         this->F( S::VISCOSITY, S::VISCOSITY_CHANGE ) = dT;
+        // partial derivative of x.x4() w.r.t. x.x8()
+        this->F( S::VISCOSITY, S::VISCOSITY_CHANGE_CHANGE ) = 0.5 * dT * dT;
 
 
         // W = df/dw (Jacobian of state transition w.r.t. the noise)
