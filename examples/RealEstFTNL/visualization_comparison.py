@@ -51,7 +51,7 @@ if __name__ == "__main__":
             data = np.hstack((data, line_data))
     # length of the data
     # plot the data only if flag is set
-    end_time = 30
+    end_time = 10
     if True:
         # create a numpy array of time steps every 1/500 seconds
         time_steps = np.arange(0, end_time, 1/500)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         # Plot the reconstructed force vs the real force
         fig3, (ax7, ax8) = plt.subplots(2, 1)
         ax7.plot(time_steps, data[-1, :length], color="r", label="F")
-        ax7.plot(time_steps, data[4, :length] * data[6, :length] + data[5, :length] * data[7, :length], color="g", label="F-ekf")
+        ax7.plot(time_steps, pow(data[4, :length],1.5) * data[6, :length] + pow(data[4, :length],0.5) * data[5, :length] * data[7, :length], color="g", label="F-ekf")
         ax7.plot(time_steps, data[8, :length] * data[10, :length] + data[9, :length] * data[11, :length], color="b", label="F-ukf")
         # error between the estimated and the real force
         ax8.plot(time_steps, data[-1, :length] - data[4, :length] * data[6, :length] - data[5, :length] * data[7, :length], color="r", label="F-err-ekf")

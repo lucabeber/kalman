@@ -60,11 +60,11 @@ if __name__ == "__main__":
         ax1.plot(time_steps, data[2, :length], color="r", label="x1")
         ax1.plot(time_steps, data[4, :length], color="g", label="x1-ekf")
         ax1.plot(time_steps, data[8, :length], color="b", label="x1-ukf")
-        ax1.plot(time_steps, data[16, :length], color="orange", label="x1-sim")
+        # ax1.plot(time_steps, data[16, :length], color="orange", label="x1-sim")
         ax2.plot(time_steps, data[3, :length], color="r", label="x2")
         ax2.plot(time_steps, data[5, :length], color="g", label="x2-ekf")
         ax2.plot(time_steps, data[9, :length], color="b", label="x2-ukf")
-        ax2.plot(time_steps, data[17, :length], color="orange", label="x2-sim")
+        # ax2.plot(time_steps, data[17, :length], color="orange", label="x2-sim")
         ax1.legend()
         ax2.legend()
         ax3.plot(time_steps, data[6, :length], color="g", label="x3-ekf")
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         # ax2.set_ylabel("RMS Error")
         # ax2.set_title("RMS Error of Cartesian Position")
         # Set window title
-        # plt.show()
+        plt.show()
         fig2, (ax5, ax6) = plt.subplots(2, 1)
         # Plot the covariance of the estimate state ekf
         ax5.plot(time_steps, data[20, :length], color="g", label="P11-ekf")
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         ax6.plot(time_steps, data[26, :length], color="orange", label="P33-ukf")
         ax6.plot(time_steps, data[27, :length], color="purple", label="P44-ukf")
         ax6.legend()
-        # plt.show()
+        plt.show()
 
         # Plot the reconstructed force vs the real force
         fig3, (ax7, ax8) = plt.subplots(2, 1)
@@ -106,7 +106,7 @@ if __name__ == "__main__":
         ax8.plot(time_steps, data[-1, :length] - data[8, :length] * data[10, :length] - data[9, :length] * data[11, :length], color="b", label="F-err-ukf")
         ax7.legend()
         ax8.legend()
-        # plt.show()
+        plt.show()
 
         fig4, (ax11, ax22, ax33, ax44) = plt.subplots(4, 1)
         # error between the estimated and the real penetration
