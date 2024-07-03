@@ -128,7 +128,7 @@ public:
         S x_;
         double dT = this->dT;
         double m = this->m;
-        double r = this->r;
+        // double r = this->r;
         // New x-position given by old x-position plus change in x-direction
         // Change in x-direction is given by the cosine of the (new) orientation
         // times the velocity
@@ -203,6 +203,10 @@ public:
         this->F( S::VISCOSITY, S::VISCOSITY_CHANGE ) = dT;
         // partial derivative of x.x4() w.r.t. x.x8()
         this->F( S::VISCOSITY, S::VISCOSITY_CHANGE_CHANGE ) = 0.5 * dT * dT;
+        // partial derivative of x.x5() w.r.t. x.x7()
+        this->F( S::ELASTICITY_CHANGE, S::ELASTICITY_CHANGE_CHANGE ) = dT;
+        // partial derivative of x.x6() w.r.t. x.x8()
+        this->F( S::VISCOSITY_CHANGE, S::VISCOSITY_CHANGE_CHANGE ) = dT;
 
 
         // W = df/dw (Jacobian of state transition w.r.t. the noise)

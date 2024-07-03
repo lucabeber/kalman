@@ -83,7 +83,7 @@ int main(int argc, char** argv)
     // Unscented Kalman Filter
     Kalman::UnscentedKalmanFilter<State> ukf(1);
     // Adaptive Fading Extended Kalman Filter
-    Kalman::AFExtendedKalmanFilter<State> afekf;
+    Kalman::AdaptiveFadingUnscentedKalmanFilter<State> afekf;
 
     // Init filters with true system state
     ekf.init(x);
