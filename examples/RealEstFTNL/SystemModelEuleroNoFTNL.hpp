@@ -113,8 +113,8 @@ public:
         S x_;
         double dT = this->dT;
         double m = this->m;
-        double k0 = this->k0;
-        double c0 = this->c0;
+        // double k0 = this->k0;
+        // double c0 = this->c0;
         // New x-position given by old x-position plus change in x-direction
         // Change in x-direction is given by the cosine of the (new) orientation
         // times the velocity
