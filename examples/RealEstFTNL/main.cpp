@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_hard.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
     
     State x;
 
-    x.x1() = 1;    
+    x.x1() = 0.1;    
     x.x2() = data[0][3];
     x.x3() = 0.1;//1e4;
     x.x4() = 0.1;//1e3;
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     // Unscented Kalman Filter
     Kalman::UnscentedKalmanFilter<State> ukf(1);
     // Adaptive Fading Extended Kalman Filter
-    Kalman::AFExtendedKalmanFilter<State> afekf;
+    Kalman::AdaptiveFadingUnscentedKalmanFilter<State> afekf;
 
     // Init filters with true system state
     ekf.init(x);
@@ -102,14 +102,14 @@ int main(int argc, char** argv)
     // Save covariance for later
     Kalman::Covariance<State> cov = ekf.getCovariance();
     // Set initial values for the covariance
-    cov(0,0) = 1;
+    cov(0,0) = 0.1;
     cov(1,1) = 1e-4;
-    cov(2,2) = 1;
-    cov(3,3) = 1;
-    cov(4,4) = 1;
-    cov(5,5) = 1;
-    cov(6,6) = 1;
-    cov(7,7) = 1;
+    cov(2,2) = 0.1;
+    cov(3,3) = 0.05;
+    cov(4,4) = 0.1;
+    cov(5,5) = 0.1;
+    cov(6,6) = 0.1;
+    cov(7,7) = 0.1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 1e-2;
+    cov2(0,0) = 1;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
