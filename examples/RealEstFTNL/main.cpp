@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_d5mm_horse.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -59,10 +59,10 @@ int main(int argc, char** argv)
     
     State x;
 
-    x.x1() = 0.1;    
+    x.x1() = 1;    
     x.x2() = data[0][3];
     x.x3() = 0.1;//1e4;
-    x.x4() = 0.1;//1e3;
+    x.x4() = 0.01;//1e3;
     
     // x.x1() = data[0][2];    
     // x.x2() = data[0][3];
@@ -98,10 +98,10 @@ int main(int argc, char** argv)
     // Save covariance for later
     Kalman::Covariance<State> cov = ekf.getCovariance();
     // Set initial values for the covariance
-    cov(0,0) = 0.1;
-    cov(1,1) = 1e-4;
-    cov(2,2) = 0.5;
-    cov(3,3) = 0.1;
+    cov(0,0) = 7;
+    cov(1,1) = 1;
+    cov(2,2) = 1;
+    cov(3,3) = 1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
