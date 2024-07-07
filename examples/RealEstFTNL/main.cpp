@@ -98,7 +98,7 @@ int main(int argc, char** argv)
     // Save covariance for later
     Kalman::Covariance<State> cov = ekf.getCovariance();
     // Set initial values for the covariance
-    cov(0,0) = 7;
+    cov(0,0) = 5;
     cov(1,1) = 1;
     cov(2,2) = 1;
     cov(3,3) = 1;
