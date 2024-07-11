@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_hard.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
         std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the measurement noise
     Kalman::Covariance<VelocityMeasurement> cov2 = vm.getCovariance();
-    cov2(0,0) = 1;
+    cov2(0,0) = 1e-2;
     if(vm.setCovariance(cov2)!= true)
         std::cout << "Error in setting covariance" << std::endl;
 
