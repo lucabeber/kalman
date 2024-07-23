@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran_2mms.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran_4mms.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
                     << "," << x_ekf_tmp.x1() << "," << x_ekf_tmp.x2() << "," << x_ekf_tmp.x3() << "," << x_ekf_tmp.x4()
                     << "," << x_ukf_tmp.x1() << "," << x_ukf_tmp.x2() << "," << x_ukf_tmp.x3() << "," << x_ukf_tmp.x4()
                     << "," << x_afukf.x1() << "," << x_afukf.x2() << "," << x_afukf.x3() << "," << x_afukf.x4()
-                    << "," << data[i-1][4] 
+                    << "," << data[i][10] << "," << data[i-1][4] 
                     << std::endl;
     }
     
