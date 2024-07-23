@@ -14,6 +14,7 @@
 #include <kalman/ExtendedKalmanFilter.hpp>
 #include <kalman/UnscentedKalmanFilter.hpp>
 #include <kalman/AFExtendedKalmanFilter.hpp>
+#include <kalman/AFUnscentedKalmanFilter.hpp>
 
 #include <iostream>
 #include <random>
@@ -41,7 +42,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_tran_2mms.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -63,10 +64,10 @@ int main(int argc, char** argv)
     x.x2() = data[0][3];
     x.x3() = 0.1;//1e4;
     x.x4() = 0.1;//1e3;
-    x.x5() = 0.0;
-    x.x6() = 0.0;
-    x.x7() = 0.0;
-    x.x8() = 0.0;
+    // x.x5() = 0.0;
+    // x.x6() = 0.0;
+    // x.x7() = 0.0;
+    // x.x8() = 0.0;
     
     // x.x1() = data[0][2];    
     // x.x2() = data[0][3];
@@ -92,12 +93,15 @@ int main(int argc, char** argv)
     // Unscented Kalman Filter
     Kalman::UnscentedKalmanFilter<State> ukf(1);
     // Adaptive Fading Extended Kalman Filter
-    Kalman::AdaptiveFadingUnscentedKalmanFilter<State> afekf;
+    Kalman::AFExtendedKalmanFilter<State> afekf;
+    // Adaptive Fading Unscented Kalman Filter
+    Kalman::AdaptiveFadingUnscentedKalmanFilter<State> afukf;
 
     // Init filters with true system state
     ekf.init(x);
     ukf.init(x);
     afekf.init(x);
+
 
     // Save covariance for later
     Kalman::Covariance<State> cov = ekf.getCovariance();
@@ -106,10 +110,10 @@ int main(int argc, char** argv)
     cov(1,1) = 1e-4;
     cov(2,2) = 0.1;
     cov(3,3) = 0.05;
-    cov(4,4) = 0.1;
-    cov(5,5) = 0.1;
-    cov(6,6) = 0.1;
-    cov(7,7) = 0.1;
+    // cov(4,4) = 0.1;
+    // cov(5,5) = 0.1;
+    // cov(6,6) = 0.1;
+    // cov(7,7) = 0.1;
 
     // Set covariance of the filters
     if(ekf.setCovariance(cov)!= true)
@@ -118,15 +122,17 @@ int main(int argc, char** argv)
         std::cout << "Error in setting covariance" << std::endl;
     if(afekf.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
+    if(afukf.setCovariance(cov)!= true)
+        std::cout << "Error in setting covariance" << std::endl;
     // Set covariance of the process noise
     cov(0,0) = 1e-8;
     cov(1,1) = 1e-5;
     cov(2,2) = 0.0;
     cov(3,3) = 0.0;
-    cov(4,4) = 0.0;
-    cov(5,5) = 0.0;
-    cov(6,6) = 0.0;
-    cov(7,7) = 0.0;
+    // cov(4,4) = 0.0;
+    // cov(5,5) = 0.0;
+    // cov(6,6) = 0.0;
+    // cov(7,7) = 0.0;
 
     if(sys.setCovariance(cov)!= true)
         std::cout << "Error in setting covariance" << std::endl;
@@ -156,6 +162,7 @@ int main(int argc, char** argv)
         auto x_ekf_tmp = ekf.predict(sys, u);
         auto x_ukf_tmp = ukf.predict(sys, u);
         auto x_afekf_tmp = afekf.predict(sys, u);    
+        auto x_afukf_tmp = afukf.predict(sys, u);
 
         // Get the measurement of velocity
         VelocityMeasurement vel;
@@ -167,6 +174,7 @@ int main(int argc, char** argv)
         auto x_ekf = ekf.update(vm, vel);
         auto x_ukf = ukf.update(vm, vel);
         auto x_afekf = afekf.update(vm, vel);
+        auto x_afukf = afukf.update(vm, vel);
 
         // Print to stdout as csv format
         std::cout   << data[i][0] << "," << data[i][1] << "," << data[i][2] << "," << vel.v() 
@@ -180,7 +188,8 @@ int main(int argc, char** argv)
                     // Print the value of ekf and ukf after the predict step
                     << "," << x_ekf_tmp.x1() << "," << x_ekf_tmp.x2() << "," << x_ekf_tmp.x3() << "," << x_ekf_tmp.x4()
                     << "," << x_ukf_tmp.x1() << "," << x_ukf_tmp.x2() << "," << x_ukf_tmp.x3() << "," << x_ukf_tmp.x4()
-                    << "," << data[i-1][4]
+                    << "," << x_afukf.x1() << "," << x_afukf.x2() << "," << x_afukf.x3() << "," << x_afukf.x4()
+                    << "," << data[i-1][4] 
                     << std::endl;
     }
     

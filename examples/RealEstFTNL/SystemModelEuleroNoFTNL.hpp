@@ -17,10 +17,10 @@ namespace Estimation
  * @param T Numeric scalar type
  */
 template<typename T>
-class State : public Kalman::Vector<T, 8>
+class State : public Kalman::Vector<T, 4>
 {
 public:
-    KALMAN_VECTOR(State, T, 8)
+    KALMAN_VECTOR(State, T, 4)
     
     //! Penetration inside the soft tissue
     static constexpr size_t POSITION = 0;
@@ -30,32 +30,32 @@ public:
     static constexpr size_t ELASTICITY = 2;
     //! Viscosity of the soft tissue
     static constexpr size_t VISCOSITY = 3;
-    //! Change in elasticity of the soft tissue
-    static constexpr size_t ELASTICITY_CHANGE = 4;
-    //! Change in viscosity of the soft tissue
-    static constexpr size_t VISCOSITY_CHANGE = 5;
-    //! Acceleration change in elasticity of the soft tissue
-    static constexpr size_t ELASTICITY_CHANGE_CHANGE = 6;
-    //! Acceleration change in viscosity of the soft tissue
-    static constexpr size_t VISCOSITY_CHANGE_CHANGE = 7;
+    // //! Change in elasticity of the soft tissue
+    // static constexpr size_t ELASTICITY_CHANGE = 4;
+    // //! Change in viscosity of the soft tissue
+    // static constexpr size_t VISCOSITY_CHANGE = 5;
+    // //! Acceleration change in elasticity of the soft tissue
+    // static constexpr size_t ELASTICITY_CHANGE_CHANGE = 6;
+    // //! Acceleration change in viscosity of the soft tissue
+    // static constexpr size_t VISCOSITY_CHANGE_CHANGE = 7;
     
     T x1()      const { return (*this)[ POSITION ]; }
     T x2()      const { return (*this)[ VELOCITY ]; }
     T x3()      const { return (*this)[ ELASTICITY ]; }
     T x4()      const { return (*this)[ VISCOSITY ]; }
-    T x5()      const { return (*this)[ ELASTICITY_CHANGE ]; }
-    T x6()      const { return (*this)[ VISCOSITY_CHANGE ]; }
-    T x7()      const { return (*this)[ ELASTICITY_CHANGE_CHANGE ]; }
-    T x8()      const { return (*this)[ VISCOSITY_CHANGE_CHANGE ]; }
+    // T x5()      const { return (*this)[ ELASTICITY_CHANGE ]; }
+    // T x6()      const { return (*this)[ VISCOSITY_CHANGE ]; }
+    // T x7()      const { return (*this)[ ELASTICITY_CHANGE_CHANGE ]; }
+    // T x8()      const { return (*this)[ VISCOSITY_CHANGE_CHANGE ]; }
     
     T& x1()         { return (*this)[ POSITION ]; }
     T& x2()         { return (*this)[ VELOCITY ]; }
     T& x3()         { return (*this)[ ELASTICITY ]; }
     T& x4()         { return (*this)[ VISCOSITY ]; }
-    T& x5()         { return (*this)[ ELASTICITY_CHANGE ]; }
-    T& x6()         { return (*this)[ VISCOSITY_CHANGE ]; }
-    T& x7()         { return (*this)[ ELASTICITY_CHANGE_CHANGE ]; }
-    T& x8()         { return (*this)[ VISCOSITY_CHANGE_CHANGE ]; }
+//     T& x5()         { return (*this)[ ELASTICITY_CHANGE ]; }
+//     T& x6()         { return (*this)[ VISCOSITY_CHANGE ]; }
+//     T& x7()         { return (*this)[ ELASTICITY_CHANGE_CHANGE ]; }
+//     T& x8()         { return (*this)[ VISCOSITY_CHANGE_CHANGE ]; }
 };
 
 /**
@@ -151,14 +151,15 @@ public:
         //     x_.x1() = x.x1() + x.x2()*dT - 0.5 * dT * dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4())) ;
         //     x_.x2() = x.x2() - dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4()));
         // }
-        x_.x1() = x.x1() + x.x2()*dT - 0.5 * dT * dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4())) ;
+        x_.x1() = x.x1() + x.x2()*dT; // - 0.5 * dT * dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4())) ;
         x_.x2() = x.x2() - dT/(m)*( -u.u() + pow(abs(x.x1()),1.5)*(x.x3()) + x.x2()*pow(abs(x.x1()),0.5)*(x.x4()));
-        x_.x3() = x.x3() + x.x5()*dT + 0.5*x.x7()*dT*dT;
-        x_.x4() = x.x4() + x.x6()*dT + 0.5*x.x8()*dT*dT;
-        x_.x5() = x.x5() + x.x7()*dT;
-        x_.x6() = x.x6() + x.x8()*dT;
-        x_.x7() = x.x7();
-        x_.x8() = x.x8();
+        x_.x3() = x.x3(); //+ x.x5()*dT + 0.5*x.x7()*dT*dT;
+        x_.x4() = x.x4(); //+ x.x6()*dT + 0.5*x.x8()*dT*dT;
+        
+        // x_.x5() = x.x5() + x.x7()*dT;
+        // x_.x6() = x.x6() + x.x8()*dT;
+        // x_.x7() = x.x7();
+        // x_.x8() = x.x8();
 
         
         // Return transitioned state vector
@@ -195,18 +196,18 @@ public:
         this->F( S::VELOCITY, S::ELASTICITY ) = -((dT * pow(abs(x.x1()), 3/2))/(m));
         // partial derivative of x.x2() w.r.t. x.x4()
         this->F( S::VELOCITY, S::VISCOSITY ) = -((dT * sqrt(abs(x.x1())) * x.x2())/(m));
-        // partial derivative of x.x3() w.r.t. x.x5()
-        this->F( S::ELASTICITY, S::ELASTICITY_CHANGE ) = dT;
-        // partial derivative of x.x3() w.r.t. x.x7()
-        this->F( S::ELASTICITY, S::ELASTICITY_CHANGE_CHANGE ) = 0.5 * dT * dT;
-        // partial derivative of x.x4() w.r.t. x.x6()
-        this->F( S::VISCOSITY, S::VISCOSITY_CHANGE ) = dT;
-        // partial derivative of x.x4() w.r.t. x.x8()
-        this->F( S::VISCOSITY, S::VISCOSITY_CHANGE_CHANGE ) = 0.5 * dT * dT;
-        // partial derivative of x.x5() w.r.t. x.x7()
-        this->F( S::ELASTICITY_CHANGE, S::ELASTICITY_CHANGE_CHANGE ) = dT;
-        // partial derivative of x.x6() w.r.t. x.x8()
-        this->F( S::VISCOSITY_CHANGE, S::VISCOSITY_CHANGE_CHANGE ) = dT;
+        // // partial derivative of x.x3() w.r.t. x.x5()
+        // this->F( S::ELASTICITY, S::ELASTICITY_CHANGE ) = dT;
+        // // partial derivative of x.x3() w.r.t. x.x7()
+        // this->F( S::ELASTICITY, S::ELASTICITY_CHANGE_CHANGE ) = 0.5 * dT * dT;
+        // // partial derivative of x.x4() w.r.t. x.x6()
+        // this->F( S::VISCOSITY, S::VISCOSITY_CHANGE ) = dT;
+        // // partial derivative of x.x4() w.r.t. x.x8()
+        // this->F( S::VISCOSITY, S::VISCOSITY_CHANGE_CHANGE ) = 0.5 * dT * dT;
+        // // partial derivative of x.x5() w.r.t. x.x7()
+        // this->F( S::ELASTICITY_CHANGE, S::ELASTICITY_CHANGE_CHANGE ) = dT;
+        // // partial derivative of x.x6() w.r.t. x.x8()
+        // this->F( S::VISCOSITY_CHANGE, S::VISCOSITY_CHANGE_CHANGE ) = dT;
 
 
         // W = df/dw (Jacobian of state transition w.r.t. the noise)

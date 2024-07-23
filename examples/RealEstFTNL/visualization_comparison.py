@@ -44,7 +44,7 @@ if __name__ == "__main__":
     for line in lines:
         # convert to string
         line_string = str(line.splitlines()[0], "utf-8")
-        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((37, 1))
+        line_data = np.array([float(s) for s in line_string.split(",")]).reshape((41, 1))
         if data is None:
             data = line_data
         else:
@@ -59,24 +59,27 @@ if __name__ == "__main__":
         # Create 4 subplots
         fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1)
         ax1.plot(time_steps, data[2, :length], color="r", label="x1")
-        # ax1.plot(time_steps, data[4, :length], color="g", label="x1-ekf")
+        ax1.plot(time_steps, data[4, :length], color="g", label="x1-ekf")
         ax1.plot(time_steps, data[8, :length], color="b", label="x1-ukf")
         ax1.plot(time_steps, data[12, :length], color="orange", label="x1-afekf")
+        ax1.plot(time_steps, data[36, :length], color="purple", label="x1-afukf")
         # ax1.plot(time_steps, data[16, :length], color="orange", label="x1-sim")
         ax2.plot(time_steps, data[3, :length], color="r", label="x2")
-        # ax2.plot(time_steps, data[5, :length], color="g", label="x2-ekf")
+        ax2.plot(time_steps, data[5, :length], color="g", label="x2-ekf")
         ax2.plot(time_steps, data[9, :length], color="b", label="x2-ukf")
         ax2.plot(time_steps, data[13, :length], color="orange", label="x2-afekf")
+        ax2.plot(time_steps, data[37, :length], color="purple", label="x2-afukf")
         # ax2.plot(time_steps, data[17, :length], color="orange", label="x2-sim")
         ax1.legend()
         ax2.legend()
-        # ax3.plot(time_steps, data[6, :length], color="g", label="x3-ekf")
+        ax3.plot(time_steps, data[6, :length], color="g", label="x3-ekf")
         ax3.plot(time_steps, data[10, :length], color="b", label="x3-ukf")
-        ax3.plot(time_steps, data[18, :length], color="orange", label="x3-sim")
+        ax3.plot(time_steps, data[18, :length], color="r", label="x3-sim")
         ax3.plot(time_steps, data[14, :length], color="orange", label="x3-afekf")
-        # ax4.plot(time_steps, data[7, :length], color="g", label="x4-ekf")
+        ax3.plot(time_steps, data[38, :length], color="purple", label="x2-afukf")
+        ax4.plot(time_steps, data[7, :length], color="g", label="x4-ekf")
         ax4.plot(time_steps, data[11, :length], color="b", label="x4-ukf")
-        ax4.plot(time_steps, data[19, :length], color="orange", label="x4-sim")
+        ax4.plot(time_steps, data[19, :length], color="r", label="x4-sim")
         ax4.plot(time_steps, data[15, :length], color="orange", label="x4-afekf")
         ax3.legend()
         ax4.legend()
