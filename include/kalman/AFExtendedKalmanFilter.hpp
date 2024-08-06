@@ -245,7 +245,7 @@ namespace Kalman {
             // std::cout << "Fading factor: " << alpha << std::endl;
         }
 
-        double threshold = 2.0; // Threshold for innovation magnitude
+        double threshold = 1.9; // Threshold for innovation magnitude
         double maxAlpha = 1.003; // Maximum allowed fading factor
         double minAlpha = 1.0; // Minimum allowed fading factor
         double alphaIncrement = 0.0001; // Increment step for increasing alpha

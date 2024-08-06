@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
 
     # Save the data in a file in ../../experiments/EKF/est1_hard_cancer.txt
-    np.savetxt("../../experiments/EKF/est3_hard_cancer.txt", data, delimiter=",")
+    np.savetxt("/home/luca/Dottorato/TIM/experiments/trasl_6mms_exp_fast.txt", data, delimiter=",")
     
         
 
