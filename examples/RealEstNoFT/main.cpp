@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // 3rd column: actual penetration
     // 4th column: actual velocity
     std::ifstream file;
-    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_hard_cancer.csv");
+    file.open("/home/luca/Dottorato/Online Stiffness Estimation/cpp/kalman/simulation_data_hard.csv");
     std::string line;
     std::vector<std::vector<double>> data;
     while (std::getline(file, line))
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     x.x4() = 0;
     
     // System
-    SystemModel sys(0.002, 0.6e-3, 1000e-3, 2*sqrt(1000)*1e-3);
+    SystemModel sys(0.002, 0.14e-3, 1000e-3, 2*sqrt(1000)*1e-3);
 
     // Control input
     Control u;
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
         // Update UKF
         auto x_ekf = ekf.update(vm, vel);
         auto x_ukf = ukf.update(vm, vel);
-        auto x_afekf = afekf.update(vm, sys, vel);
+        auto x_afekf = afekf.update(vm, vel);
 
         // Print to stdout as csv format
         std::cout   << -0.2570 - data[i-1][0] << "," << data[i][1] << "," << data[i][2] << "," << vel.v() 

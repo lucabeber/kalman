@@ -51,7 +51,7 @@ if __name__ == "__main__":
             data = np.hstack((data, line_data))
     # length of the data
     # plot the data only if flag is set
-    end_time = 15
+    end_time = 10
     if args.makeplot:
         # create a numpy array of time steps every 1/500 seconds
         time_steps = np.arange(0, end_time, 1/500)
@@ -145,16 +145,21 @@ if __name__ == "__main__":
     print("Damping: ", data[19,1])
 
     # Print in terminal the stiffness and damping at 2 seconds    
-    print("Stiffness at 5 seconds efk: ", data[6, 5*500])
-    print("Stiffness at 5 seconds ukf: ", data[10, 5*500])
-    print("Damping at 5 seconds efk: ", data[7, 5*500])
-    print("Damping at 5 seconds ukf: ", data[11, 5*500])
+    print("Stiffness at 5 seconds efk: ", data[6, 5*500-1])
+    print("Stiffness at 5 seconds ukf: ", data[10, 5*500-1])
+    print("Damping at 5 seconds efk: ", data[7, 5*500-1])
+    print("Damping at 5 seconds ukf: ", data[11, 5*500-1])
 
     # Print in terminal the stiffness and damping at 10 seconds
-    print("Stiffness at 10 seconds efk: ", data[6, 10*500])
-    print("Stiffness at 10 seconds ukf: ", data[10, 10*500])
-    print("Damping at 10 seconds efk: ", data[7, 10*500])
-    print("Damping at 10 seconds ukf: ", data[11, 10*500])
+    print("Stiffness at 10 seconds efk: ", data[6, 10*500-1])
+    print("Stiffness at 10 seconds ukf: ", data[10, 10*500-1])
+    print("Damping at 10 seconds efk: ", data[7, 10*500-1])
+    print("Damping at 10 seconds ukf: ", data[11, 10*500-1])
+
+    # Persentage error between the estimated stiffness and damping and the real values after 10 seconds
+    print("Percentage error of the stiffness at 10 seconds efk: ", (data[6, 10*500-1] - data[18,1])/data[18,1]*100)
+    print("Percentage error of the damping at 10 seconds efk: ", (data[7, 10*500-1] - data[19,1])/data[19,1]*100)
+
     # Save the data in a file in ../../experiments/EKF/est1_hard_cancer.txt
-    np.savetxt("../../experiments/EKF/est4_hard_cancer.txt", data, delimiter=",") 
+    # np.savetxt("../../experiments/EKF/est4_hard_cancer.txt", data, delimiter=",") 
     

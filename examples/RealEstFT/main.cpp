@@ -58,10 +58,10 @@ int main(int argc, char** argv)
     file.close();
     
     State x;
-    x.x1() = 0.0;
-    x.x2() = 0.0;
-    x.x3() = 1.0;
-    x.x4() = 1.0;
+    // x.x1() = 0.0;
+    // x.x2() = 0.0;
+    // x.x3() = 1.0;
+    // x.x4() = 1.0;
 
     // x.x1() = data[0][2];    
     // x.x2() = data[0][3];
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     x.x3() = 0;
     x.x4() = 0;
     // System
-    SystemModel sys(0.002, 0.06e-3);
+    SystemModel sys(0.002, 0.14e-3);
 
     // Control input
     Control u;
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
         // Update UKF
         auto x_ekf = ekf.update(vm, vel);
         auto x_ukf = ukf.update(vm, vel);
-        auto x_afekf = afekf.update(vm, sys, vel);
+        auto x_afekf = afekf.update(vm, vel);
 
         // Print to stdout as csv format
         std::cout   << data[i][0] << "," << data[i][1] << "," << data[i][2] << "," << vel.v() 
